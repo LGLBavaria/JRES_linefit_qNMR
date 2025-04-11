@@ -10,6 +10,7 @@ function explained here
 ## JRES_peak_picking()
 function explained here
 ## JRES_signal_identification
+function explained here
 ### JRES_find_singulet()
 function explained here
 ### JRES_find_even_signal()
@@ -24,7 +25,7 @@ To read bruker NMR files the package rnmrfit (https://github.com/ssokolen/rnmrfi
 `read_1d_rnmrdata()` is a modified function to create NMRData1D objects, supplemented by the slot ‘DATA’ which contains the real numbers of the spectrum intensity, adjusted by the scaling factor nc.proc and additional acquisitiondata. The input value is the `path` to the spectra defined as `.../exp_number/`.
 
 ## extract_ppm(Spec)
-`extract_ppm()` calculate the step size for the ppm axis of the NMRData1D object by the following formula: $spectral width (=Spec.sw)/(number of data points (=Spec.size) -1)$.
+`extract_ppm()` calculates the step size for the ppm axis of the NMRData1D object by the following formula: $spectral width (=Spec.sw)/(number of data points (=Spec.size) -1)$.
 Using the calculated step size, the ppm axis is constructed from the maximum ppm value (Spec.maxppm) to the minimum ppm value (Spec.minppm).
 
 ## fit_signal()
@@ -75,6 +76,7 @@ The output of `fit_signal()` function is a ggplot of the fit in the defined sect
 
 
 # Example Spectra and Usage
+An example spectra of beer and beer-based mixed beverage is provided.
 ```
 xxx
 ```
