@@ -1,0 +1,24 @@
+##TITLE= Parameter file, TopSpin 3.7.0
+##JCAMPDX= 5.0
+##DATATYPE= Parameter Values
+##NPOINTS= 42	$$ modification sequence number
+##ORIGIN= Bruker BioSpin GmbH
+##OWNER=
+$$ 2025-02-25 18:00:49.135 +0100  
+$$ 
+$$ process 
+##$ACQT0= 0
+##$BF1= 400.13
+##$FnILOOP= 0
+##$FnMODE= 1
+##$NUC1= <1H>
+##$NusJSP= 0
+##$NusT2= 1
+##$NusTD= 40
+##$O1= 1881.00000002578
+##$ProjAngle= 0
+##$SFO1= 400.131881
+##$SW= 0.194934403648798
+##$SW_h= 77.9994696036067
+##$TD= 40
+##END=
