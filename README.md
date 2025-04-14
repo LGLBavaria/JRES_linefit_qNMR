@@ -4,133 +4,101 @@ This R code provides functions to evaluate J-Resolution 2D NMR-spectra and use t
 Please cite the following manuscripts if you use the package:
 publication will be inserted as soon as it is published
 
-# Usage
+# Requirements
+-   **R version**: \>= 4.4.1
+-   **Required R packages (JRES)**:
+    -   *dplyr*
+    -   *ggplot2*
+    -   *ggrepel*
+    -   *mrbin*
+    -   *purrr*
+    -   *tidyr*<br><br>
+
+# Key Functions Overview
 ## JRES_import()
 This function automates the import and referencing of 2D JRES NMR spectra from Bruker instruments. It reads the spectrum using `readBruker()` from the *mrbin* package and extracts the data into a dataframe format. To correct for common referencing issues in automated TopSpin® processing, the function implements a built-in referencing routine based on the internal standard TSP-d4. It automatically detects the TSP singulet using `JRES_peak_picking()` with an adjustable intensity limit (`IntenseLimit`) and `JRES_find_singulet()` within a defined ppm range, adjusts the spectral axes accordingly, and returns the referenced spectrum as a dataframe.
-**Parameters:**
-    -   **`path`** (character): A string representing the file path to the JRES spectrum.
-    -   **`IntenseLimit`** (numeric, optional): sets the minimal required Intensity for Peaks (Default: 1000)\
+<br><br>
+**Parameters:**<br>
+    **`path`** (character): A string representing the file path to the JRES spectrum.<br>
+    **`IntenseLimit`** (numeric, optional): sets the minimal required Intensity for Peaks (Default: 1000)<br><br>
 
 ## JRES_peak_picking()
-This function identifies peaks in a selected region of a 2D JRES NMR spectrum. It requires the input spectrum and a defined chemical shift range (`ppm_min`, `ppm_max`). Peaks are detected as local maxima that exceed the defined intensity threshold and all surrounding points in a moving search window. Optional parameters allow further control over the horizontal (F2) and vertical (F1) search window size (`horiz_range`, `vert_range`) and a minimum intensity threshold (`IntenseLimit`) to suppress noise artifacts. The optimal intensity threshold strongly depends on the spectrometer setup and should be determined by manually evaluating the intensity range of the background noise.
-
-     **Parameters:**
-
-    -   **`spectrum`** (dataframe): spectrum dataframe imported by `JRES_import()`
-    -   **`ppm_max`** (numeric): upper border for the chemical shift (F2) in the evaluated region
-    -   **`ppm_min`** (numeric): lower border for the chemical shift (F2) in the evaluated region
-    -   **`horiz_range`** (numeric, optional): sets the broadness of the F2-Range used in the identification of local maxima (Peaks) (Default: 20 [datapoints])
-    -   **`vert_range`** (numeric, optional): sets the broadness of the F1-Range used in the identification of local maxima (Peaks) (Default: 20 [datapoints])
-    -   **`IntenseLimit`** (numeric, optional): sets the minimal required Intensity for Peaks (Default: 1000)
-
-    The function returns a list containing the subset of the spectrum (`sub_spectrum`) and a dataframe of identified peaks (`JRESPeaklist`), including their F1 and F2 positions and intensities.
+This function identifies peaks in a selected region of a 2D JRES NMR spectrum. It requires the input spectrum and a defined chemical shift range (`ppm_min`, `ppm_max`). Peaks are detected as local maxima that exceed the defined intensity threshold and all surrounding points in a moving search window. Optional parameters allow further control over the horizontal (F2) and vertical (F1) search window size (`horiz_range`, `vert_range`) and a minimum intensity threshold (`IntenseLimit`) to suppress noise artifacts. The optimal intensity threshold strongly depends on the spectrometer setup and should be determined by manually evaluating the intensity range of the background noise.<br><br>
+   **Parameters:**<br>
+    **`spectrum`** (dataframe): spectrum dataframe imported by `JRES_import()`<br>
+    **`ppm_max`** (numeric): upper border for the chemical shift (F2) in the evaluated region<br>
+    **`ppm_min`** (numeric): lower border for the chemical shift (F2) in the evaluated region<br>
+    **`horiz_range`** (numeric, optional): sets the broadness of the F2-Range used in the identification of local maxima (Peaks) (Default: 20 [datapoints])<br>
+    **`vert_range`** (numeric, optional): sets the broadness of the F1-Range used in the identification of local maxima (Peaks) (Default: 20 [datapoints])<br>
+    **`IntenseLimit`** (numeric, optional): sets the minimal required Intensity for Peaks (Default: 1000)<br><br>
+    The function returns a list containing the subset of the spectrum (`sub_spectrum`) and a dataframe of identified peaks (`JRESPeaklist`), including their F1 and F2 positions and intensities.<br><br>
 
 ## JRES_signal_identification
 function explained here
 ### JRES_find_singulet()
-This function verifies whether a peak in a 2D JRES spectrum is a true singlet by checking for its position at F1 = 0 and the absence of coupling signals along the F1 axis. It requires a list of pre-identified peaks (`JRESPeaklist`) and the expected chemical shift of the analyte (`F2shifttarget`). Optional tolerance parameters for both dimensions allow flexibility in signal identification.
-
-   **Parameters:**
-
-    -   **`JRESPeaklist`** (data frame): list of pre-identified peaks. Generated by `JRES_peak_picking()`
-    -   **`F2shifttarget`** (numeric): expected chemical shift of the analyte
-    -   **`F1shifttol`** (numeric, optional): absolute F1 tolerance used for the definition of singulets/middle peak of uneven multiplets, in ppm (default: 0.0005)
-    -   **`F2shifttol`** (numeric, optional): absolute F2 tolerance used for the definition of signals, in ppm (default: 0.001)
-
-The function filters peaks near F1 = 0 and checks whether additional peaks exist within the F2 tolerance at the same shift, indicating multiplicity. Based on the number of matching singulets, appropriate messages and error flags are returned. The result is a list containing the identified singulets, its chemical shift, and error indicators for downstream processing.
-    -   `mark_signal_data` (data frame): includes all relevant information for the peaks belonging to the identified signal.
-    -   `peak_center` (numeric): signal center on F2-axis/chemical shift
-    -   `Error_JRES0` and `Error_JRES1` (logical): error flags
-    <br>
+This function verifies whether a peak in a 2D JRES spectrum is a true singlet by checking for its position at F1 = 0 and the absence of coupling signals along the F1 axis. It requires a list of pre-identified peaks (`JRESPeaklist`) and the expected chemical shift of the analyte (`F2shifttarget`). Optional tolerance parameters for both dimensions allow flexibility in signal identification.<br><br>
+   **Parameters:**<br>
+    **`JRESPeaklist`** (data frame): list of pre-identified peaks. Generated by `JRES_peak_picking()`<br>
+    **`F2shifttarget`** (numeric): expected chemical shift of the analyte<br>
+    **`F1shifttol`** (numeric, optional): absolute F1 tolerance used for the definition of singulets/middle peak of uneven multiplets, in ppm (default: 0.0005)<br>
+    **`F2shifttol`** (numeric, optional): absolute F2 tolerance used for the definition of signals, in ppm (default: 0.001)<br><br>
+The function filters peaks near F1 = 0 and checks whether additional peaks exist within the F2 tolerance at the same shift, indicating multiplicity. Based on the number of matching singulets, appropriate messages and error flags are returned. The result is a list containing the identified singulets, its chemical shift, and error indicators for downstream processing.<br>
+    `mark_signal_data` (data frame): includes all relevant information for the peaks belonging to the identified signal.<br>
+    `peak_center` (numeric): signal center on F2-axis/chemical shift<br>
+    `Error_JRES0` and `Error_JRES1` (logical): error flags<br><br>
+    
 ### JRES_find_even_signal()
-This function identifies and verifies multiplets with an even number of components (e.g. doublets, quartets etc.) in JRES spectra. It uses the same core inputs as `JRES_find_singulet()` and requires additional parameters:
-
-    **Parameters:**
-
-    -   **`JRESPeaklist`**: (data frame) list of pre-identified peaks. Generated by `JRES_peak_picking()`
-    -   **`F2shifttarget`** (numeric): expected chemical shift of the analyte
-    -   **`F1shifttol`** (numeric, optional): absolute F1 tolerance used for the definition of singulets/middle peak of uneven multiplets, in ppm (default: 0.0005)
-    -   **`F2shifttol`** (numeric, optional): absolute F2 tolerance used for the definition of signals, in ppm (default: 0.002)
-    -   **`multiplicity`** (numeric): expected number of peaks in the signal
-    -   **`coupleconst`** (numeric vector): coupling constants relative to signal center
-    -   **`coupletol`** (numeric): relative tolerance for coupling match (default: 0.05)
-    -   **`check_height`**: (logical, optional): enables intensity check if `TRUE` (default: `FALSE`)
-    -   **`heightratio`** (numeric vector): expected relative peak heights
-    -   **`heighttol`** (numeric, optional): allowed deviation in relative heights (default: 0.1)
-
-    The function works via several modular subfunctions:
-
-    1.  **`cut_odd_couplings()`**: removes peaks at F1 = 0 including their coupled peaks
-    2.  **`filter_even_couplings()`**: creates peak pairs based on F2 proximity
-    3.  **`find_even_coupled_signals()`**: groups pairs and checks multiplicity
-    4.  **`check_even_coupling()`**: verifies coupling constants relative to signal center
-    5.  **`check_height_even_signal()`** *(optional)*: compares measured vs. expected intensity ratios
-    6.  **`results_even_signal()`**: final selection of signals based on F2 position (`F2shifttarget`) in case more than one signal fits the criteria. Returns a result list (`result_list`) with:
-        -   `mark_signal_data` (data frame): includes all relevant information for the peaks belonging to the identified signal.
-        -   `peak_center` (numeric): signal center on F2-axis/chemical shift
-        -   `detected_coupling_ppm` (vector, numeric): coupling constants
-        -   `Error_JRES0` and `Error_JRES1` (logical): error flags
+This function identifies and verifies multiplets with an even number of components (e.g. doublets, quartets etc.) in JRES spectra. It uses the same core inputs as `JRES_find_singulet()` and requires additional parameters:<br><br>
+**Parameters:**<br>
+    **`JRESPeaklist`**: (data frame) list of pre-identified peaks. Generated by `JRES_peak_picking()`<br>
+    **`F2shifttarget`** (numeric): expected chemical shift of the analyte<br>
+    **`F1shifttol`** (numeric, optional): absolute F1 tolerance used for the definition of singulets/middle peak of uneven multiplets, in ppm (default: 0.0005)<br>
+    **`F2shifttol`** (numeric, optional): absolute F2 tolerance used for the definition of signals, in ppm (default: 0.002)<br>
+    **`multiplicity`** (numeric): expected number of peaks in the signal<br>
+    **`coupleconst`** (numeric vector): coupling constants relative to signal center<br>
+    **`coupletol`** (numeric): relative tolerance for coupling match (default: 0.05)<br>
+    **`check_height`**: (logical, optional): enables intensity check if `TRUE` (default: `FALSE`)<br>
+    **`heightratio`** (numeric vector): expected relative peak heights<br>
+    **`heighttol`** (numeric, optional): allowed deviation in relative heights (default: 0.1)<br><br>
+    The function works via several modular subfunctions:<br>
+    1.  **`cut_odd_couplings()`**: removes peaks at F1 = 0 including their coupled peaks<br>
+    2.  **`filter_even_couplings()`**: creates peak pairs based on F2 proximity<br>
+    3.  **`find_even_coupled_signals()`**: groups pairs and checks multiplicity<br>
+    4.  **`check_even_coupling()`**: verifies coupling constants relative to signal center<br>
+    5.  **`check_height_even_signal()`** *(optional)*: compares measured vs. expected intensity ratios<br>
+    6.  **`results_even_signal()`**: final selection of signals based on F2 position (`F2shifttarget`) in case more than one signal fits the criteria. Returns a result list (`result_list`) with:<br><br>
+        `mark_signal_data` (data frame): includes all relevant information for the peaks belonging to the identified signal.<br>
+        `peak_center` (numeric): signal center on F2-axis/chemical shift<br>
+        `detected_coupling_ppm` (vector, numeric): coupling constants<br>
+        `Error_JRES0` and `Error_JRES1` (logical): error flags<br>
         <br>
+
 ### JRES_find_odd_signal()
-This function identifies and verifies multiplets with an odd number of components (e.g., triplets etc.) in JRES spectra. Input parameters are identical to those of `JRES_find_even_signal()`, with a slightly different default F2 shift tolerance of `F2shifttol = 0.003`. Like the even signal function, it is divided into modular subfunctions for clarity.
-
-    1.  **`cut_even_couplings()`**: removes singlets at F1 = 0 without coupling partners in F2. Requires `JRESPeaklist`, `F1shifttol`, and `F2shifttol`.
-    2.  **`filter_odd_couplings()`**: identifies potential coupling partners based on F2 proximity and calculates F1 shift differences.
-    3.  **`find_odd_coupled_signals()`**: groups peaks by F2 shift and checks if the number of couplings matches the expected odd multiplicity (see Formula 10).
-    4.  **`check_odd_coupling()`**: validates coupling constants against `coupleconst` and `coupletol`. Ensures all expected couplings are present.
-    5.  **`check_height_odd_signal()`** *(optional)*: checks relative peak intensities. Same structure as `check_height_even_signal()`.
-    6.  **`results_odd_signal()`**: final selection of signals based on F2 position. Returns a result list (`result_list`) with:
-        -   `mark_signal_data` (data frame): includes all relevant information for the peaks belonging to the identified signal.
-
-        -   `peak_center` (numeric): signal center on F2-axis/chemical shift
-
-        -   `detected_coupling_ppm` (vector, numeric): coupling constants
-
-        -   `Error_JRES0` and `Error_JRES1` (logical): error flags
+This function identifies and verifies multiplets with an odd number of components (e.g., triplets etc.) in JRES spectra. Input parameters are identical to those of `JRES_find_even_signal()`, with a slightly different default F2 shift tolerance of `F2shifttol = 0.003`.<br><br>
+Like the even signal function, it is divided into modular subfunctions for clarity.<br>
+    1.  **`cut_even_couplings()`**: removes singlets at F1 = 0 without coupling partners in F2. Requires `JRESPeaklist`, `F1shifttol`, and `F2shifttol`.<br>
+    2.  **`filter_odd_couplings()`**: identifies potential coupling partners based on F2 proximity and calculates F1 shift differences.<br>
+    3.  **`find_odd_coupled_signals()`**: groups peaks by F2 shift and checks if the number of couplings matches the expected odd multiplicity (see Formula 10).<br>
+    4.  **`check_odd_coupling()`**: validates coupling constants against `coupleconst` and `coupletol`. Ensures all expected couplings are present.<br>
+    5.  **`check_height_odd_signal()`** *(optional)*: checks relative peak intensities. Same structure as `check_height_even_signal()`.<br>
+    6.  **`results_odd_signal()`**: final selection of signals based on F2 position. Returns a result list (`result_list`) with:<br><br>
+        `mark_signal_data` (data frame): includes all relevant information for the peaks belonging to the identified signal.<br>
+        `peak_center` (numeric): signal center on F2-axis/chemical shift<br>
+        `detected_coupling_ppm` (vector, numeric): coupling constants<br>
+        `Error_JRES0` and `Error_JRES1` (logical): error flags<br>
         <br>
+        
 ## JRES_plot_spectrum()
-This function is used for visualizing a section of a JRES spectrum with optional marking of identified signals. The function starts by converting the spectrum into a long format for visualization using the **ggplot2** package. It then generates a base plot of the spectrum with contour lines and filled regions. If `mark_signal` is set to `TRUE`, the signals stored in `mark_signal_data` are added as marked points. These points are displayed in the specified `mark_color`. Labels for all marked peaks are generated, displaying the chemical shifts (F1ppm and F2ppm) with an offset to prevent label overlap. The function returns the generated visualization object and displays it.
-
-    **Parameters:**
-
-    -   **`sub_spectrum`** (data frame): A data frame containing the spectral data for the region to be displayed. This is a required parameter.
-    -   **`mark_signal_data`** (data frame, optional): A data frame containing the identified peaks that are to be marked on the spectrum.
-    -   **`sampleID`** (character, optional): A string representing the sample number. This is for labeling purposes.
-    -   **`analyte`** (character, optional): The name of the analyte being analyzed. This is for labeling purposes.
-    -   **`mark_signal`** (logical, optional): A logical value that indicates whether to mark the identified peaks. The default is `FALSE`. If set to `TRUE`, the peaks in `mark_signal_data` will be marked.
-    -   **`mark_color`** (character, optional): The color used to mark the identified peaks. This parameter is only used if `mark_signal` is `TRUE`.
-    -   **`mark_rel_x_shift`** (numeric, optional): The relative shift for placing the labels of marked peaks along the x-axis. This helps avoid overlap of labels with the signal.
+This function is used for visualizing a section of a JRES spectrum with optional marking of identified signals. The function starts by converting the spectrum into a long format for visualization using the **ggplot2** package. It then generates a base plot of the spectrum with contour lines and filled regions. If `mark_signal` is set to `TRUE`, the signals stored in `mark_signal_data` are added as marked points. These points are displayed in the specified `mark_color`. Labels for all marked peaks are generated, displaying the chemical shifts (F1ppm and F2ppm) with an offset to prevent label overlap. The function returns the generated visualization object and displays it.<br>        
+    **Parameters:**<br>
+    **`sub_spectrum`** (data frame): A data frame containing the spectral data for the region to be displayed. This is a required parameter.<br>
+    **`mark_signal_data`** (data frame, optional): A data frame containing the identified peaks that are to be marked on the spectrum.<br>
+    **`sampleID`** (character, optional): A string representing the sample number. Used for labeling of the plot.<br>
+    **`analyte`** (character, optional): The name of the analyte being analyzed. Used for labeling of the plot.<br>
+    **`mark_signal`** (logical, optional): A logical value that indicates whether to mark the identified peaks. The default is `FALSE`. If set to `TRUE`, the peaks in `mark_signal_data` will be marked.<br>
+    **`mark_color`** (character, optional): The color used to mark the identified peaks. This parameter is only used if `mark_signal` is `TRUE`.<br>
+    **`mark_rel_x_shift`** (numeric, optional): The relative shift for placing the labels of marked peaks along the x-axis. This helps avoid overlap of labels with the signal.<br>
     <br>
-## integrate_signal()
-This function provides a simple method for integrating 1D NMR signals. The function first determines the integration range by selecting all data points within the specified boundaries (`left_range` and `right_range`). It then applies a baseline correction by determining the minimum intensity within the integration range and subtracting it from all intensity values. The integral is then calculated as the sum of the corrected intensities within the selected range.
-
-For visualization, the function creates a data frame and generates a plot using the *ggplot2* package. The plot displays the spectrum as a black line, the integrated area as a blue-shaded region, and the integration boundaries as dashed lines.
-
-    **Parameters:**
-
-    -   `x` (numeric vector): A vector containing the chemical shift values (ppm) corresponding to the NMR signal.
-
-    -   `y` (numeric vector): A vector containing the intensity values corresponding to the chemical shifts in `x`.
-
-    -   `peak_center` (numeric): The position of the peak or integration region center, in ppm.
-
-    -   `left_range` (numeric): The range left of `peak_center`, in ppm.
-
-    -   `right_range` (numeric): The right i of `peak_center`, in ppm.
-
-    -   `sampleID` (character, optional): A string representing the sample number. Used for labeling of the plot.
-
-    -   `analyte` (character, optional): The name of the analyte being studied. Used for labeling of the plot.
-
-    The function returns a result list (`results_integration`) containing:
-
-    -   `integral_value` (numeric): The calculated integral value.
-
-    -   `integral_x` (numeric, vector): The indices of the x-values used for integration.
-
-    -   `integral_y` (numeric, vector): The corrected intensity values within the integration range.
-
-    -   `plot` (plot): The generated plot as an object.
 
 ## read_1d_rnmrdata(path)
 To read bruker NMR files the package rnmrfit (https://github.com/ssokolen/rnmrfit) is used. 
@@ -185,10 +153,169 @@ The output of `fit_signal()` function is a ggplot of the fit in the defined sect
 `mse`: mean squared error of the fit  
 `plot`: a ggplot for visualising the fit in the defines spectral region with the spectral line and it's residuals
 
+## integrate_signal()
+This function provides a simple method for integrating 1D NMR signals. The function first determines the integration range by selecting all data points within the specified boundaries (`left_range` and `right_range`). It then applies a baseline correction by determining the minimum intensity within the integration range and subtracting it from all intensity values. The integral is then calculated as the sum of the corrected intensities within the selected range.<br>
 
+For visualization, the function creates a data frame and generates a plot using the *ggplot2* package. The plot displays the spectrum as a black line, the integrated area as a blue-shaded region, and the integration boundaries as dashed lines.<br><br>
+    **Parameters:**<br>
+    **`x`** (numeric vector): A vector containing the chemical shift values (ppm) corresponding to the NMR signal.<br>
+    **`y`** (numeric vector): A vector containing the intensity values corresponding to the chemical shifts in `x`.<br>
+    **`peak_center`** (numeric): The position of the peak or integration region center, in ppm.<br>
+    **`left_range`** (numeric): The range left of `peak_center`, in ppm.<br>
+    **`right_range`** (numeric): The right i of `peak_center`, in ppm.<br>
+    **`sampleID`** (character, optional): A string representing the sample number. Used for labeling of the plot.<br>
+    **`analyte`** (character, optional): The name of the analyte being studied. Used for labeling of the plot.<br><br>
+    The function returns a result list (`results_integration`) containing:<br><br>
+    `integral_value` (numeric): The calculated integral value.<br>
+    `integral_x` (numeric, vector): The indices of the x-values used for integration.<br>
+    `integral_y` (numeric, vector): The corrected intensity values within the integration range.<br>
+    `plot` (plot): The generated plot as an object.<br><br>
 
 # Example Spectra and Usage
 An example spectra of beer and beer-based mixed beverage is provided.
+## Quick Start Example
+
+1.  **Load R packages and the above mentioned functions**
+
+2.  **Import JRES spectrum**
+
+    1.  In cases where referencing to the internal standard signal is not necessary, spectral data can be imported using the `readBruker()` function from the *mrbin* R package. For both workflows, the relevant spectral data are stored in the output list under `...$currentSpectrum`.
+
+    2.  For the use of `JRES_import()`, first check the intensity of the background noise in the evaluated region using TopSpin® or similar software. This step is important, as different spectrometers and customized pulse programs can result in varying intensity scales. Define `IntenseLimit` as at least two to three times the maximum observed noise intensity.
+
+    3.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
+
+        ``` r
+        # Definition of the path 
+        path <- paste(FilePath, "12/", sep = "/") 
+
+        # Example for the usage of readBruker()
+        JRES2D_Import <- readBruker(folder = paste(path, "pdata", "1", sep = "/"),  dimension = "2D")
+
+        # Example for the usage of the function JRES_import()
+        JRES2D_Import <- JRES_import(path = path, IntenseLimit = 1000)
+
+        # Extract spectral information fpr further processing
+        JRES2D_Data <- as.data.frame(JRES2D_Import$currentSpectrum)
+        ```
+
+3.  **Peak picking and identification of a singulet (i.e. methyl group singulet of acetic acid)**
+
+    ``` r
+    # 1. Peak picking J-resolved
+    JRES_Peaks <- JRES_peak_picking(
+      spectrum = JRES2D_Data, 
+      ppm_max = 2.2, 
+      ppm_min = 2.0,
+      horiz_range = 20,
+      vert_range = 20,
+      IntenseLimit = 1000
+    )
+
+    sub_spectrum <- JRES_Peaks$sub_spectrum
+    JRESPeaklist <- JRES_Peaks$JRESPeaklist
+
+
+    # 2.  Identification of the acetic acid singulet
+    result_list <- JRES_find_singulet(
+      JRESPeaklist = JRESPeaklist, 
+      F2shifttarget = 2.075,
+      F1shifttol = 0.0005, 
+      F2shifttol = 0.001
+    )
+
+    mark_signal_data <- result_list$mark_signal_data
+    Error_JRES0 <- result_list$Error_JRES0
+    Error_JRES1 <- result_list$Error_JRES1
+    ```
+
+4.  **Peak picking and identification of a signal with even multiplicity (i.e. methyl group doublet of lactic acid)**
+
+    ``` r
+    # 1. Peak picking J-resolved
+    JRES_Peaks <- JRES_peak_picking(
+      spectrum = JRES2D_Data, 
+      ppm_max = 1.5, 
+      ppm_min = 1.3
+      horiz_range = 20,
+      vert_range = 20,
+      IntenseLimit = 1000
+    )
+
+    sub_spectrum <- JRES_Peaks$sub_spectrum
+    JRESPeaklist <- JRES_Peaks$JRESPeaklist
+
+
+    # 2.  Identification of the lactic acid doublet
+    result_list <- JRES_find_even_signal(
+      JRESPeaklist = JRESPeaklist,
+      F2shifttarget = 1.397,
+      coupleconst = c(0.0091, 0.0091),
+      multiplicity = 2,
+      coupletol = 0.05,
+      F1shifttol = 0.0005,
+      F2shifttol = 0.002,
+      check_height = FALSE,
+      heightratio = NA,
+      heighttol = 0.1
+    )
+
+    mark_signal_data <- result_list$mark_signal_data
+    detected_coupling_ppm <- result_list$detected_coupling_ppm
+    Error_JRES0 <- result_list$Error_JRES0
+    Error_JRES1 <- result_list$Error_JRES1
+    ```
+
+5.  **Peak picking and identification of a signal with an odd numbered multiplicity (i.e. methyl group triplet of ethanol)**
+
+    ``` r
+    # 1. Peak picking J-resolved
+    JRES_Peaks <- JRES_peak_picking(
+      spectrum = JRES2D_Data, 
+      ppm_max = 1.3, 
+      ppm_min = 1.05, 
+      horiz_range = 20,
+      vert_range = 20,
+      IntenseLimit = 10000
+    )
+
+    sub_spectrum <- JRES_Peaks$sub_spectrum
+    JRESPeaklist <- JRES_Peaks$JRESPeaklist
+
+
+    # 2.  Identification of the ethanol triplet
+    result_list <- JRES_find_odd_signal(
+      JRESPeaklist =JRESPeaklist,
+      F2shifttarget = 1.17,
+      coupleconst = c(0.0179, 0.0179),
+      multiplicity = 3,
+      coupletol = 0.1,
+      F1shifttol = 0.0005,
+      F2shifttol = 0.003,
+      check_height = FALSE,
+      heightratio = NA,
+      heighttol = 0.1
+    )
+
+    mark_signal_data <- result_list$mark_signal_data
+    detected_coupling_ppm <- result_list$detected_coupling_ppm
+    Error_JRES0 <- result_list$Error_JRES0
+    Error_JRES1 <- result_list$Error_JRES1
+    ```
+
+6.  **Plotting the results**
+
+    ``` r
+    JRESplot <- JRES_plot_spectrum(
+      sub_spectrum = sub_spectrum,
+      mark_signal_data = mark_signal_data,
+      sampleID = "NA",
+      analyte = "NA",
+      mark_signal = TRUE,
+      mark_color = "red",
+      mark_rel_x_shift = 0.05
+    )
+    ```
 ```
 xxx
 ```
