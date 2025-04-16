@@ -1,9 +1,3 @@
-# JRES_linefit_qNMR
-This R code provides functions to evaluate J-Resolution 2D NMR-spectra and use the received signal information to create a Line-Fit algorithmn for 1D NMR-spectra. Via PULCON it is possible to quantify analytes within complex matrices by this code combination.
-
-Please cite the following manuscripts if you use the package:
-publication will be inserted as soon as it is published
-
 # Requirements
 -   **R version**: \>= 4.4.1
 -   **Required R packages**:
@@ -15,6 +9,12 @@ publication will be inserted as soon as it is published
     -   *rnmrfit*
     -   *purrr*
     -   *tidyr*<br><br>
+
+# JRES_linefit_qNMR
+This R code provides functions to evaluate J-Resolution 2D NMR-spectra and use the received signal information to create a Line-Fit algorithmn for 1D NMR-spectra. Via PULCON it is possible to quantify analytes within complex matrices by this code combination.
+
+Please cite the following manuscripts if you use the package:
+publication will be inserted as soon as it is published
 
 # Key Functions Overview
 ## JRES_import()
@@ -36,7 +36,6 @@ This function identifies peaks in a selected region of a 2D JRES NMR spectrum. I
     The function returns a list containing the subset of the spectrum (`sub_spectrum`) and a dataframe of identified peaks (`JRESPeaklist`), including their F1 and F2 positions and intensities.<br><br>
 
 ## JRES_signal_identification
-function explained here
 ### JRES_find_singulet()
 This function verifies whether a peak in a 2D JRES spectrum is a true singlet by checking for its position at F1 = 0 and the absence of coupling signals along the F1 axis. It requires a list of pre-identified peaks (`JRESPeaklist`) and the expected chemical shift of the analyte (`F2shifttarget`). Optional tolerance parameters for both dimensions allow flexibility in signal identification.<br><br>
    **Parameters:**<br>
@@ -101,7 +100,7 @@ This function is used for visualizing a section of a JRES spectrum with optional
     **`mark_color`** (character, optional): The color used to mark the identified peaks. This parameter is only used if `mark_signal` is `TRUE`.<br>
     **`mark_rel_x_shift`** (numeric, optional): The relative shift for placing the labels of marked peaks along the x-axis. This helps avoid overlap of labels with the signal.<br>
     <br>
-
+    
 ## read_1d_rnmrdata(path)
 To read bruker NMR files the package rnmrfit (https://github.com/ssokolen/rnmrfit) is used. 
 `read_1d_rnmrdata()` is a modified function to create NMRData1D objects, supplemented by the slot ‘DATA’ which contains the real numbers of the spectrum intensity, adjusted by the scaling factor nc.proc and additional acquisitiondata. The input value is the `path` to the spectra defined as `.../exp_number/`.
@@ -318,6 +317,42 @@ An example spectra of beer and beer-based mixed beverage is provided.
       mark_rel_x_shift = 0.05
     )
     ```
-```
-xxx
-```
+7.  **Import 1D spectrum**
+
+     The function `read_1d_rnmnrdata()` is used for importing the 1D spectra.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
+
+        ``` r
+        # Definition of the path 
+        path <- paste(FilePath, "13", sep = "/") 
+
+        # Example for the usage of read_1d_rnmnrdata()
+        NOESY1D_Data <- read_1d_rnmnrdata(path)
+        ```
+8.  **Extraktion of the shifts, intensity and SF of the spectra**
+       ``` r
+        shift <- extract_ppm(NOESY1D_Data)
+        intensity <- NOESY1D_Data@parameters$Data
+        SF <- NOESY1D_Data@parameters$SF
+        ```
+9.  **LineFitting of a signal with three peaks (i.e. methyl group triplet of ethanol)**
+        ``` r
+        # Definition of the Peak center out of JRES (result_list)
+        peak_center <- result_list$peak_center
+        # Definition of the evaluated spectral region (keep in mind, max. intensity in the area defines tolerated error)
+        spectral_region <- which(shift < (peak_center + 0.05) & shift > (peak_center - 0.05))
+        # LineFitting of ethanol
+        Ethanol_fit <- fit_signal(
+        sampleID = "beer",
+        x = shift[spectral_region],
+        y = intensity[spectral_region],
+        peaknumber = "three",
+        peak_center = peak_center,
+        shift_tolerance = 0.01, #[ppm]
+        SF = SF,
+        coupling_constant_Hz = result_list$detected_coupling_ppm * SF, #[Hz]
+        area_ratios = c(0.5, 1, 0.5),
+        coupling_tolerance = 0.1)
+        # Exclude integral value
+        Integral_Ethanol <- Ethanol_fit$integral_value
+  )
+        ```
