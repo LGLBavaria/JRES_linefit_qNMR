@@ -11,6 +11,7 @@ publication will be inserted as soon as it is published
     -   *ggplot2*
     -   *ggrepel*
     -   *mrbin*
+    -   *rnmrfit*
     -   *purrr*
     -   *tidyr*<br><br>
 
