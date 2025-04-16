@@ -6,8 +6,9 @@ publication will be inserted as soon as it is published
 
 # Requirements
 -   **R version**: \>= 4.4.1
--   **Required R packages (JRES)**:
+-   **Required R packages**:
     -   *dplyr*
+    -   *GA*
     -   *ggplot2*
     -   *ggrepel*
     -   *mrbin*
