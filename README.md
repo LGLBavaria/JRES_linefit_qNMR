@@ -360,3 +360,4 @@ An example spectra of beer and beer-based mixed beverage is provided.
         Integral_Ethanol <- Ethanol_fit$integral_value
     )
     ```
+
