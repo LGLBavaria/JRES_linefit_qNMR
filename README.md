@@ -317,30 +317,34 @@ An example spectra of beer and beer-based mixed beverage is provided.
       mark_rel_x_shift = 0.05
     )
     ```
+    
 7.  **Import 1D spectrum**
 
      The function `read_1d_rnmnrdata()` is used for importing the 1D spectra.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
 
-        ``` r
-        # Definition of the path 
+   ``` r
+    # Definition of the path 
         path <- paste(FilePath, "13", sep = "/") 
 
-        # Example for the usage of read_1d_rnmnrdata()
+    # Example for the usage of read_1d_rnmnrdata()
         NOESY1D_Data <- read_1d_rnmnrdata(path)
-        ```
+   ```
+
 8.  **Extraktion of the shifts, intensity and SF of the spectra**
-       ``` r
+
+    ``` r
         shift <- extract_ppm(NOESY1D_Data)
         intensity <- NOESY1D_Data@parameters$Data
         SF <- NOESY1D_Data@parameters$SF
-        ```
+    ```
+    
 9.  **LineFitting of a signal with three peaks (i.e. methyl group triplet of ethanol)**
-        ``` r
-        # Definition of the Peak center out of JRES (result_list)
+   ``` r
+    # Definition of the Peak center out of JRES (result_list)
         peak_center <- result_list$peak_center
-        # Definition of the evaluated spectral region (keep in mind, max. intensity in the area defines tolerated error)
+    # Definition of the evaluated spectral region (keep in mind, max. intensity in the area defines tolerated error)
         spectral_region <- which(shift < (peak_center + 0.05) & shift > (peak_center - 0.05))
-        # LineFitting of ethanol
+    # LineFitting of ethanol
         Ethanol_fit <- fit_signal(
         sampleID = "beer",
         x = shift[spectral_region],
@@ -354,5 +358,5 @@ An example spectra of beer and beer-based mixed beverage is provided.
         coupling_tolerance = 0.1)
         # Exclude integral value
         Integral_Ethanol <- Ethanol_fit$integral_value
-  )
-        ```
+    )
+    ```
