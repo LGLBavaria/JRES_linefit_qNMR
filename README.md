@@ -353,7 +353,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
         peak_center = peak_center,
         shift_tolerance = 0.01, #[ppm]
         SF = SF,
-        coupling_constant_Hz = result_list$detected_coupling_ppm * SF, #[Hz]
+        peak_shifts_Hz = result_list$detected_coupling_ppm * SF, #[Hz]
         area_ratios = c(0.5, 1, 0.5),
         coupling_tolerance = 0.1)
         # Exclude integral value
