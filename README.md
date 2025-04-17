@@ -320,7 +320,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
     
 7.  **Import 1D spectrum**
 
-     The function `read_1d_rnmnrdata()` is used for importing the 1D spectra.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
+     The function `read_1d_rnmrdata()` is used for importing the 1D spectra.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
 
     ``` r
     # Definition of the path 
