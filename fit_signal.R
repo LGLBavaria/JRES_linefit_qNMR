@@ -24,6 +24,8 @@
 #overfit_cor = F                       possible option to use an extra penalty for signals overfitiing the spectral line, default: FALSE
 #overfit_factor = 10                   factor for extra penalty (overfitting the spectral line), default: low = 1, medium = 10, high = 1000
 
+library(GA)
+
 #----------------------------------------- definition of peak-functions ------------------------------------------------------
 
 #Definition of the Pseudo-Voigt-function for single peaks
