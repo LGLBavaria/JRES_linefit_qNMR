@@ -186,7 +186,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
 
     3.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
 
-        ``` r
+     ``` r
         # Definition of the path 
         path <- paste(FilePath, "12/", sep = "/") 
 
@@ -198,7 +198,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
 
         # Extract spectral information fpr further processing
         JRES2D_Data <- as.data.frame(JRES2D_Import$currentSpectrum)
-        ```
+     ```
 
 3.  **Peak picking and identification of a singulet (i.e. methyl group singulet of acetic acid)**
 
