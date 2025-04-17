@@ -237,7 +237,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
     JRES_Peaks <- JRES_peak_picking(
       spectrum = JRES2D_Data, 
       ppm_max = 1.5, 
-      ppm_min = 1.3
+      ppm_min = 1.3,
       horiz_range = 20,
       vert_range = 20,
       IntenseLimit = 1000
