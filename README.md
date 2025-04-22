@@ -1,3 +1,10 @@
+
+# JRES_linefit_qNMR
+This R code provides functions to evaluate J-Resolution 2D NMR-spectra and use the received signal information to create a Line-Fit algorithmn for 1D NMR-spectra. Via PULCON it is possible to quantify analytes within complex matrices by this code combination.
+
+Please cite the following manuscripts if you use the package:
+publication will be inserted as soon as it is published
+
 # Requirements
 -   **R version**: \>= 4.4.1
 -   **Required R packages**:
@@ -9,12 +16,6 @@
     -   *rnmrfit*
     -   *purrr*
     -   *tidyr*<br><br>
-
-# JRES_linefit_qNMR
-This R code provides functions to evaluate J-Resolution 2D NMR-spectra and use the received signal information to create a Line-Fit algorithmn for 1D NMR-spectra. Via PULCON it is possible to quantify analytes within complex matrices by this code combination.
-
-Please cite the following manuscripts if you use the package:
-publication will be inserted as soon as it is published
 
 # Key Functions Overview
 ## JRES_import()
