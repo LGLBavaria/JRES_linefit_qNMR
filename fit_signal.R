@@ -578,13 +578,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     eta <- best_params[5]
     fit_values <- pseudo_voigt_single(x, a, x0, sigma, gamma, eta)
     
-    # Calculation integral of Pseudo-Voigt-function for one peak
-    pseudo_voigt_integral_singlet <- function(a, sigma, gamma, eta) {
-      lorentz_integral <- pi * a * gamma
-      gauss_integral <- a * sigma * sqrt(2 * pi)
-      eta * lorentz_integral + (1 - eta) * gauss_integral
-    }
-    integral_value <- pseudo_voigt_integral_singlet(a, sigma, gamma, eta)
+    integral_value <- sum(fit_values)
     
   } else if (peaknumber == "two") {
     a1 <- best_params[1]
@@ -596,14 +590,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift2 <- best_params[7]
     fit_values <- pseudo_voigt_twoPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2), area_ratios)
     
-    # Calculation integral of Pseudo-Voigt-function for for two peaks
-    pseudo_voigt_integral_twoPeaks <- function(a1, sigma, gamma, eta, ratios) {
-      lorentz_integral <- pi * a1 * gamma
-      gauss_integral <- a1 * sigma * sqrt(2 * pi)
-      single_integral <- eta * lorentz_integral + (1 - eta) * gauss_integral
-      sum(single_integral * ratios)
-    }
-    integral_value <- pseudo_voigt_integral_twoPeaks(a1, sigma, gamma, eta, area_ratios)
+    integral_value <- sum(fit_values)
     
   } else if (peaknumber == "three") {
     a1 <- best_params[1]
@@ -616,14 +603,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift3 <- best_params[8]
     fit_values <- pseudo_voigt_threePeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3), area_ratios)
     
-    # Calculation integral of Pseudo-Voigt-function for three peaks
-    pseudo_voigt_integral_threePeaks <- function(a1, sigma, gamma, eta, ratios) {
-      lorentz_integral <- pi * a1 * gamma
-      gauss_integral <- a1 * sigma * sqrt(2 * pi)
-      single_integral <- eta * lorentz_integral + (1 - eta) * gauss_integral
-      sum(single_integral * ratios)
-    }
-    integral_value <- pseudo_voigt_integral_threePeaks(a1, sigma, gamma, eta, area_ratios)
+    integral_value <- sum(fit_values)
     
   } else if (peaknumber == "four"){
     a1 <- best_params[1]
@@ -637,14 +617,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift4 <- best_params[9]
     fit_values <- pseudo_voigt_triplet_fourPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4), area_ratios)
     
-    # Calculation integral of Pseudo-Voigt-function for four peaks
-    pseudo_voigt_integral_fourPeaks <- function(a1, sigma, gamma, eta, ratios) {
-      lorentz_integral <- pi * a1 * gamma
-      gauss_integral <- a1 * sigma * sqrt(2 * pi)
-      single_integral <- eta * lorentz_integral + (1 - eta) * gauss_integral
-      sum(single_integral * ratios)
-    }
-    integral_value <- pseudo_voigt_integral_fourPeaks(a1, sigma, gamma, eta, area_ratios)
+    integral_value <- sum(fit_values)
+    
   } else if (peaknumber == "five"){
     a1 <- best_params[1]
     x0 <- best_params[2]
@@ -658,14 +632,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift5 <- best_params[10]
     fit_values <- pseudo_voigt_fivePeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5), area_ratios)
     
-    # Calculation integral of Pseudo-Voigt-function for five peaks
-    pseudo_voigt_integral_fivePeaks <- function(a1, sigma, gamma, eta, ratios) {
-      lorentz_integral <- pi * a1 * gamma
-      gauss_integral <- a1 * sigma * sqrt(2 * pi)
-      single_integral <- eta * lorentz_integral + (1 - eta) * gauss_integral
-      sum(single_integral * ratios)
-    }
-    integral_value <- pseudo_voigt_integral_fivePeaks(a1, sigma, gamma, eta, area_ratios)
+   integral_value <- sum(fit_values)
+    
   } else if (peaknumber == "six"){
     a1 <- best_params[1]
     x0 <- best_params[2]
@@ -680,14 +648,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift6 <- best_params[11]
     fit_values <- pseudo_voigt_sixPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6), area_ratios)
     
-    # Calculation integral of Pseudo-Voigt-function for six peaks
-    pseudo_voigt_integral_sixPeaks <- function(a1, sigma, gamma, eta, ratios) {
-      lorentz_integral <- pi * a1 * gamma
-      gauss_integral <- a1 * sigma * sqrt(2 * pi)
-      single_integral <- eta * lorentz_integral + (1 - eta) * gauss_integral
-      sum(single_integral * ratios)
-    }
-    integral_value <- pseudo_voigt_integral_sixPeaks(a1, sigma, gamma, eta, area_ratios)
+   integral_value <- sum(fit_values)
+    
   }
   else if (peaknumber == "seven"){
     a1 <- best_params[1]
@@ -704,14 +666,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift7 <- best_params[12]
     fit_values <- pseudo_voigt_sevenPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6, shift7), area_ratios)
     
-    # Calculation integral of Pseudo-Voigt-function for seven peaks
-    pseudo_voigt_integral_sevenPeaks <- function(a1, sigma, gamma, eta, ratios) {
-      lorentz_integral <- pi * a1 * gamma
-      gauss_integral <- a1 * sigma * sqrt(2 * pi)
-      single_integral <- eta * lorentz_integral + (1 - eta) * gauss_integral
-      sum(single_integral * ratios)
-    }
-    integral_value <- pseudo_voigt_integral_sevenPeaks(a1, sigma, gamma, eta, area_ratios)
+   integral_value <- sum(fit_values)
+    
   } else {
     a1 <- best_params[1]
     x0 <- best_params[2]
@@ -728,14 +684,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift8 <- best_params[13]
     fit_values <- pseudo_voigt_eightPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6, shift7, shift8), area_ratios)
     
-    # Calculation integral of Pseudo-Voigt-function for eight peaks
-    pseudo_voigt_integral_eightPeaks <- function(a1, sigma, gamma, eta, ratios) {
-      lorentz_integral <- pi * a1 * gamma
-      gauss_integral <- a1 * sigma * sqrt(2 * pi)
-      single_integral <- eta * lorentz_integral + (1 - eta) * gauss_integral
-      sum(single_integral * ratios)
-    }
-    integral_value <- pseudo_voigt_integral_eightPeaks(a1, sigma, gamma, eta, area_ratios)
+    integral_value <- sum(fit_values)
+    
   }
   
   # residuals calculation
