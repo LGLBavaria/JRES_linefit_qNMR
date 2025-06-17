@@ -578,7 +578,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     eta <- best_params[5]
     fit_values <- pseudo_voigt_single(x, a, x0, sigma, gamma, eta)
     
-    integral_value <- sum(fit_values)
+   # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   } else if (peaknumber == "two") {
     a1 <- best_params[1]
@@ -590,7 +595,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift2 <- best_params[7]
     fit_values <- pseudo_voigt_twoPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2), area_ratios)
     
-    integral_value <- sum(fit_values)
+    # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   } else if (peaknumber == "three") {
     a1 <- best_params[1]
@@ -603,7 +613,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift3 <- best_params[8]
     fit_values <- pseudo_voigt_threePeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3), area_ratios)
     
-    integral_value <- sum(fit_values)
+    # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   } else if (peaknumber == "four"){
     a1 <- best_params[1]
@@ -617,7 +632,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift4 <- best_params[9]
     fit_values <- pseudo_voigt_triplet_fourPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4), area_ratios)
     
-    integral_value <- sum(fit_values)
+    # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   } else if (peaknumber == "five"){
     a1 <- best_params[1]
@@ -632,7 +652,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift5 <- best_params[10]
     fit_values <- pseudo_voigt_fivePeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5), area_ratios)
     
-   integral_value <- sum(fit_values)
+   # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   } else if (peaknumber == "six"){
     a1 <- best_params[1]
@@ -648,7 +673,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift6 <- best_params[11]
     fit_values <- pseudo_voigt_sixPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6), area_ratios)
     
-   integral_value <- sum(fit_values)
+   # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   }
   else if (peaknumber == "seven"){
@@ -666,7 +696,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift7 <- best_params[12]
     fit_values <- pseudo_voigt_sevenPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6, shift7), area_ratios)
     
-   integral_value <- sum(fit_values)
+   # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   } else {
     a1 <- best_params[1]
@@ -684,7 +719,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift8 <- best_params[13]
     fit_values <- pseudo_voigt_eightPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6, shift7, shift8), area_ratios)
     
-    integral_value <- sum(fit_values)
+    # Calculation of the integral of the fit
+    integralarea <- sum(fit_values)
+    
+    #Multiplying with the stepwidth
+    deltappm <- abs(x[2]-x[1])
+    integral_value <- integralarea*deltappm
     
   }
   
