@@ -43,7 +43,7 @@ cut_odd_couplings <- function(JRESPeaklist,
 
 # Structuring and preselection of possible couplings --------
 
-filter_even_couplings <- function(even_couplings, F2shifttol = 0.001) {
+filter_even_couplings <- function(even_couplings, F2shifttol = 0.001, F1disttol = 0.005) {
   
   # Create an empty data frame for the difference information
   diff_even_coupling <- data.frame(
@@ -74,7 +74,14 @@ filter_even_couplings <- function(even_couplings, F2shifttol = 0.001) {
     for (n in 1:nrow(combinations)) {
       rowPeak1 <- as.numeric(combinations[n, 1])
       rowPeak2 <- as.numeric(combinations[n, 2])
-      difference <- abs(as.numeric(JRESPeaklist$F1ppm[rowPeak1]) - as.numeric(JRESPeaklist$F1ppm[rowPeak2]))
+      
+      # Check if distance to F1 = 0 is similar enough for a legitimate coupling
+      f1_value_peak1 <- JRESPeaklist$F1ppm[rowPeak1]
+      f1_value_peak2 <- JRESPeaklist$F1ppm[rowPeak2]
+      
+      # Continue if absolute F1-Values are close enough
+      if (abs(abs(f1_value_peak1) - abs(f1_value_peak2)) <= F1disttol) {
+        difference <- abs(f1_value_peak1 - f1_value_peak2)
       
       diff_even_coupling <- rbind(
         diff_even_coupling,
@@ -85,6 +92,7 @@ filter_even_couplings <- function(even_couplings, F2shifttol = 0.001) {
         )
       )
     }
+  }
     
     # Exclusion of couplings that are not in the same position
     diff_delete_rows <- rep(FALSE, nrow(diff_even_coupling))
@@ -160,7 +168,7 @@ find_even_coupled_signals <- function(diff_even_coupling, multiplicity, F2shiftt
   group_counts <- table(diff_even_coupling$GroupID)
   
   # Filter the groups that occur exactly X times (number of possible couplings in even multiplicities: x = (multiplicity/2)^2)
-  groups_with_x <- as.numeric(names(group_counts[group_counts == (multiplicity/2)^2]))
+  groups_with_x <- as.numeric(names(group_counts[group_counts == (multiplicity/2)]))
   
   # Create a new dataframe that only contains the rows whose GroupID occurs X times
   multiplicity_checked <- diff_even_coupling[diff_even_coupling$GroupID %in% groups_with_x, ]

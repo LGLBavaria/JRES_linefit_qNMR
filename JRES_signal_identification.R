@@ -152,6 +152,7 @@ JRES_find_singulet <- function(JRESPeaklist, F2shifttarget, F1shifttol = 0.0005,
 # coupletol: tolerance granted when evaluating the coupleconstant (Default: 0.05 = 5%)
 # F1shifttol: tolerance granted for middle signals to shift up/down in ppm (Default: 0.0005 #[ppm])
 # F2shifttol: tolerance granted for the peaks of one signal to differ in their F2 value (Default: 0.002 #[ppm])
+# F1dist_tol: tolerance granted for peaks t o be considered as legitimate coupled peaks
 # check_height: turns height check of signals on and off (TRUE = On, False = Off; Default: FALSE)
 
 # optional input:
@@ -165,6 +166,7 @@ JRES_find_even_signal <- function(JRESPeaklist,
                                coupletol = 0.05,
                                F1shifttol = 0.0005,
                                F2shifttol = 0.002,
+                               F1disttol = 0.005,
                                check_height = FALSE,
                                heightratio = NA,
                                heighttol = 0.1) {
@@ -177,7 +179,7 @@ JRES_find_even_signal <- function(JRESPeaklist,
   
   # 2. Structuring and pre-selection of possible couplings -------------------
   
-  diff_even_coupling <- filter_even_couplings(even_couplings, F2shifttol = F2shifttol)
+  diff_even_coupling <- filter_even_couplings(even_couplings, F2shifttol = F2shifttol, F1disttol = F1disttol)
   
   # 3. Selection according to desired even-numbered multiplicity -----------------
   
@@ -207,20 +209,6 @@ JRES_find_even_signal <- function(JRESPeaklist,
 
 
 # 3. Identification of odd-numbered couplings (3, 5, 7, 9, etc.) -----------
-
-# necessary input:
-# JRESPeaklist: Dataframe with the peaks picked by JRES_peak_picking()
-# F2shifttarget: setpoint for assumed signal position on F2-axis
-# coupleconst: vector with assumed coupling distance to signal center in ppm (for example c(0.1, 0.1))
-# multiplicity: multiplicity of the signal (3, 5, 7, 9, etc.)
-# coupletol: tolerance granted when evaluating the coupleconstant (Default: 0.05 = 5%)
-# F1shifttol: tolerance granted for middle signals to shift up/down in ppm (Default: 0.0005 #[ppm])
-# F2shifttol: tolerance granted for the peaks of one signal to differ in their F2 value (Default: 0.003 #[ppm])
-# check_height: turns height check of signals on and off (TRUE = On, False = Off; Default: FALSE)
-
-# optional input:
-# heightratio: vector with realtive height information, length has to equal multiplicity (Default: NA when not used)
-# heighttol: tolerance granted when evaluating height information (Default: 0.1 = 10%)
 
 JRES_find_odd_signal <- function(JRESPeaklist,
                               F2shifttarget,
