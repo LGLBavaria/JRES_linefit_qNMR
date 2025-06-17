@@ -34,7 +34,11 @@ integrate_signal <- function(x, y, peak_center, left_range, right_range, sampleI
   y_corrected <- y - min_y
   
   # Calculation of the integral in the selected area
-  integral <- sum(y_corrected[integral_x])
+  integralarea <- sum(y[integral_x])
+  
+  #Multiplying with the stepwidth
+  deltappm <- abs(x[2]-x[1])
+  integral <- integralarea*deltappm
   
   # Creating data frame for plotting
   b <- data.frame(x = x, y_corrected = y_corrected)
