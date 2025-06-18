@@ -43,7 +43,7 @@ cut_odd_couplings <- function(JRESPeaklist,
 
 # Structuring and preselection of possible couplings --------
 
-filter_even_couplings <- function(even_couplings, F2shifttol = 0.001, F1disttol = 0.005) {
+filter_even_couplings <- function(even_couplings, F2shifttol = 0.001, F1disttol = 0.0005) {
   
   # Create an empty data frame for the difference information
   diff_even_coupling <- data.frame(

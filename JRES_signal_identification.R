@@ -152,7 +152,7 @@ JRES_find_singulet <- function(JRESPeaklist, F2shifttarget, F1shifttol = 0.0005,
 # coupletol: tolerance granted when evaluating the coupleconstant (Default: 0.05 = 5%)
 # F1shifttol: tolerance granted for middle signals to shift up/down in ppm (Default: 0.0005 #[ppm])
 # F2shifttol: tolerance granted for the peaks of one signal to differ in their F2 value (Default: 0.002 #[ppm])
-# F1dist_tol: tolerance granted for peaks t o be considered as legitimate coupled peaks
+# F1dist_tol: tolerance granted for peaks to be considered as legitimate coupled peaks
 # check_height: turns height check of signals on and off (TRUE = On, False = Off; Default: FALSE)
 
 # optional input:
@@ -166,7 +166,7 @@ JRES_find_even_signal <- function(JRESPeaklist,
                                coupletol = 0.05,
                                F1shifttol = 0.0005,
                                F2shifttol = 0.002,
-                               F1disttol = 0.005,
+                               F1disttol = 0.0005,
                                check_height = FALSE,
                                heightratio = NA,
                                heighttol = 0.1) {
