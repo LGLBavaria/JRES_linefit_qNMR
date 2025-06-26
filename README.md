@@ -166,7 +166,7 @@ For visualization, the function creates a data frame and generates a plot using 
     **`y`** (numeric vector): A vector containing the intensity values corresponding to the chemical shifts in `x`.<br>
     **`peak_center`** (numeric): The position of the peak or integration region center, in ppm.<br>
     **`left_range`** (numeric): The range left of `peak_center`, in ppm.<br>
-    **`right_range`** (numeric): The right i of `peak_center`, in ppm.<br>
+    **`right_range`** (numeric): The range right of `peak_center`, in ppm.<br>
     **`sampleID`** (character, optional): A string representing the sample number. Used for labeling of the plot.<br>
     **`analyte`** (character, optional): The name of the analyte being studied. Used for labeling of the plot.<br><br>
     The function returns a result list (`results_integration`) containing:<br><br>
