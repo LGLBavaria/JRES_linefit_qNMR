@@ -59,7 +59,7 @@ This function identifies and verifies multiplets with an even number of componen
     **`multiplicity`** (numeric): expected number of peaks in the signal<br>
     **`coupleconst`** (numeric vector): coupling constants relative to signal center<br>
     **`coupletol`** (numeric): relative tolerance for coupling match (default: 0.05)<br>
-    **`check_height`**: (logical, optional): enables intensity check if `TRUE` (default: `FALSE`)<br>
+    **`check_height`** (logical, optional): enables intensity check if `TRUE` (default: `FALSE`)<br>
     **`heightratio`** (numeric vector): expected relative peak heights<br>
     **`heighttol`** (numeric, optional): allowed deviation in relative heights (default: 0.1)<br><br>
     The function works via several modular subfunctions:<br>
