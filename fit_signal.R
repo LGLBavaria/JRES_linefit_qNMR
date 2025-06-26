@@ -1,41 +1,42 @@
-#LineFit function:
-#fit_signal()
-#Written and Copyright by Sabine Milbert, Bavarian Health and Food Safety authority, 2024
+# LineFit function:
+# fit_signal()
+# Written and Copyright by Sabine Milbert, Bavarian Health and Food Safety authority, 2024
+# supported by ChatGPT (OpenAI, 2024)
 
 
-#Description of parameters, which have to be defined at function usage:
-#sampleID                              sample ID for visualisation
-#x                                     chemical shift of the relevant spectral region
-#y                                     signal intensity of this spectral region
-#peaknumber                            defining the amount of peaks fittet; choose from "one", "two", "three", "four", "five", "six", "seven", "eight"
-#peak_center                           center of the signal fit
-#tolerance                             tolerance accepted of the center
-#SF                                    spectral frequency of the spectrometer to calculate Hz to ppm 
-#peak_shifts_Hz                        Peak position to peak_center in Hz (from lowfield (high ppm) to highfield (low ppm)) without any sign (+/-)   
-#area_ratios                           estimated integral ratio (from lowfield (high ppm) to highfield (low ppm))                         
+# Description of parameters, which have to be defined at function usage:
+# sampleID                              sample ID for visualisation
+# x                                     chemical shift vector of the relevant spectral region
+# y                                     signal intensity vector of this spectral region
+# peaknumber                            defining the amount of peaks fittet; choose from "one", "two", "three", "four", "five", "six", "seven", "eight"
+# peak_center                           center of the signal fit
+# tolerance                             tolerance accepted of the center
+# SF                                    spectral frequency of the spectrometer to calculate Hz to ppm 
+# peak_shifts_Hz                        Peak position to peak_center in Hz (from lowfield (high ppm) to highfield (low ppm)) without any sign (+/-)   
+# area_ratios                           estimated integral ratio (from lowfield (high ppm) to highfield (low ppm))                         
 
-#optional parameters, which may be defined at function usage:
-#coupling_tolerance = 0.05             accepted tolerance of peak_shifts_Hz, default: 0,05 = 5%
-#error_threshold = 0.35 * max(y)       relative threshold to emphazise smaller errors, default: 35% of maximal signal intensity
-#error_factor = 5                      factor to minimize (<1) or emphazise (>1) errorcalculation of small errors, default: 5
-#minor_signal = F                      possible option to emphazise errorcalculation for minor signals, default: FALSE
-#minor_signal_factor = 0.1             factor to minimize (<1) or emphazise (>1) errorcalculation for minor signals, default: 0.1
-#minor_signal_threshold = 2            thershold for usage of minor_signal_factor, default: 2 (double max(y))
-#overfit_cor = F                       possible option to use an extra penalty for signals overfitiing the spectral line, default: FALSE
-#overfit_factor = 10                   factor for extra penalty (overfitting the spectral line), default: low = 1, medium = 10, high = 1000
-
-library(GA)
+# optional parameters, which may be defined at function usage:
+# coupling_tolerance = 0.05             accepted tolerance of peak_shifts_Hz, default: 0,05 = 5%
+# error_threshold = 0.35 * max(y)       relative threshold to emphazise smaller errors, default: 35% of maximal signal intensity
+# error_factor = 5                      factor to minimize (<1) or emphazise (>1) errorcalculation of small errors, default: 5
+# minor_signal = F                      possible option to emphazise errorcalculation for minor signals, default: FALSE
+# minor_signal_factor = 0.1             factor to minimize (<1) or emphazise (>1) errorcalculation for minor signals, default: 0.1
+# minor_signal_threshold = 2            thershold for usage of minor_signal_factor, default: 2 (double max(y))
+# overfit_cor = F                       possible option to use an extra penalty for signals overfitiing the spectral line, default: FALSE
+# overfit_factor = 10                   factor for extra penalty (overfitiing the spectral line), default: low = 1, medium = 10, high = 1000
+# min_width_Hz = 0                      minimum allowed width for sigma and gamma in Hz
+# max_width_Hz = 2                      maximum allowed width for sigma and gamma in Hz
 
 #----------------------------------------- definition of peak-functions ------------------------------------------------------
 
-#Definition of the Pseudo-Voigt-function for single peaks
-#x: signal center
-#a: aplitude of the fit
-#x0: peak shift to signal center --> x and x0 resultion in the actual peak position
-#gamma: half width of the Lorentz-function
-#sigma: half width of the Gauss-function 
-#eta = ratio of Lorentz in Pseudo-Voigt
-#1 - eta = ratio of Gauss in Pseudo-Voigt
+# Definition of the Pseudo-Voigt-function for single peaks
+# x: signal center
+# a: aplitude of the fit
+# x0: peak shift to signal center --> x and x0 resultion in the actual peak position
+# gamma: half width of the Lorentz-function
+# sigma: half width of the Gauss-function 
+# eta = ratio of Lorentz in Pseudo-Voigt
+# 1 - eta = ratio of Gauss in Pseudo-Voigt
 pseudo_voigt_single <- function(x, a, x0, sigma, gamma, eta) { 
   eta * (a / (1 + ((x - x0) / gamma)^2)) + 
     (1 - eta) * (a * exp(-((x - x0)^2) / (2 * sigma^2)))
@@ -125,19 +126,24 @@ baseline_correction <- function(y) {
 # function to model the signal fit, based on function parameters
 fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, peak_shifts_Hz = NULL, area_ratios = NULL, 
                        coupling_tolerance = 0.05, error_threshold = 0.35 * max(y), error_factor = 0.1, minor_signal = F, minor_signal_factor = 2, 
-                       minor_signal_threshold = 5, overfit_factor = 10, overfit_cor = F) {
+                       minor_signal_threshold = 5, overfit_factor = 10, overfit_cor = F, 
+                       min_width_Hz = 0, max_width_Hz = 2) { 
   
-  set.seed(1997) #seed for reproducability
+  set.seed(1997) # seed for reproducability
   
   # data preprocessing
   y_corrected <- baseline_correction(y)
   
-  # calculate peaks_shifts from Hz to ppm
+  # convert peaks_shifts from Hz to ppm
   if (!is.null(peak_shifts_Hz)) {
     peak_shifts <- peak_shifts_Hz / SF
   } else {
     peak_shifts <- NULL
   }
+  
+  # convert min_width from Hz to ppm
+  min_width_ppm <- min_width_Hz / SF
+  max_width_ppm <- max_width_Hz / SF
   
   # fitness-function of the GA optimizer
   if (peaknumber == "one") {
@@ -165,26 +171,26 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # Emphazising errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
       
-      #Emphazising the smaller errors (error_threshold)
+      # Emphazising the smaller errors (error_threshold)
       im1 <- (ERROR < error_threshold)
       im2 <- (ERROR >= error_threshold)
       
-      #summarize sqaured errors
+      # summarize sqaured errors
       D <- sum(ERROR[im1]^2) * error_factor + sum(ERROR[im2]^2)
       #calculate mean error
       D <- D / length(ERROR)
-      #return negative mean error
+      # return negative mean error
       -D  # fitness-function return has to be negative D, as GA optimizer is minimizing
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0)
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1)
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0)
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1)
     
   } 
   else if (peaknumber == "two") {
@@ -217,7 +223,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # Emphazising errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
@@ -232,8 +238,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0, peak_shifts * (1 - coupling_tolerance))
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1, peak_shifts * (1 + coupling_tolerance))
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0, peak_shifts * (1 - coupling_tolerance))
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1, peak_shifts * (1 + coupling_tolerance))
     
   } 
   else if (peaknumber == "three") {
@@ -267,7 +273,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # Emphazising errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
@@ -282,8 +288,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0, peak_shifts * (1 - coupling_tolerance))
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1, peak_shifts * (1 + coupling_tolerance))
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0, peak_shifts * (1 - coupling_tolerance))
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1, peak_shifts * (1 + coupling_tolerance))
     
   } 
   else if (peaknumber == "four") {
@@ -318,7 +324,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # emphazise errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
@@ -333,8 +339,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0, peak_shifts * (1 - coupling_tolerance))
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1, peak_shifts * (1 + coupling_tolerance))
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0, peak_shifts * (1 - coupling_tolerance))
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1, peak_shifts * (1 + coupling_tolerance))
     
   } 
   else if (peaknumber == "five") {
@@ -370,7 +376,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # Emphazising errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
@@ -385,8 +391,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0, peak_shifts * (1 - coupling_tolerance))
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1, peak_shifts * (1 + coupling_tolerance))
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0, peak_shifts * (1 - coupling_tolerance))
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1, peak_shifts * (1 + coupling_tolerance))
     
   }
   else if (peaknumber == "six") {
@@ -411,7 +417,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       
       shifts_adjusted <- c(shift1, shift2, shift3, shift4, shift5, shift6)
       
-      fit_values <- pseudo_voigt_fourPeaks(x, a1, x0, sigma, gamma, eta, shifts_adjusted, area_ratios)
+      fit_values <- pseudo_voigt_sixPeaks(x, a1, x0, sigma, gamma, eta, shifts_adjusted, area_ratios)
       
       # Error calculation
       ERROR <- y_corrected - fit_values
@@ -423,7 +429,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # Emphazising errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
@@ -438,8 +444,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0, peak_shifts * (1 - coupling_tolerance))
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1, peak_shifts * (1 + coupling_tolerance))
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0, peak_shifts * (1 - coupling_tolerance))
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1, peak_shifts * (1 + coupling_tolerance))
     
   }
   else if (peaknumber == "seven") {
@@ -465,7 +471,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       
       shifts_adjusted <- c(shift1, shift2, shift3, shift4, shift5, shift6, shift7)
       
-      fit_values <- pseudo_voigt_fourPeaks(x, a1, x0, sigma, gamma, eta, shifts_adjusted, area_ratios)
+      fit_values <- pseudo_voigt_sevenPeaks(x, a1, x0, sigma, gamma, eta, shifts_adjusted, area_ratios)
       
       # Error calculation
       ERROR <- y_corrected - fit_values
@@ -477,7 +483,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # Emphazising errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
@@ -492,8 +498,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0, peak_shifts * (1 - coupling_tolerance))
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1, peak_shifts * (1 + coupling_tolerance))
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0, peak_shifts * (1 - coupling_tolerance))
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1, peak_shifts * (1 + coupling_tolerance))
     
   }
   else if (peaknumber == "eight") {
@@ -520,7 +526,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       
       shifts_adjusted <- c(shift1, shift2, shift3, shift4, shift5, shift6, shift7, shift8)
       
-      fit_values <- pseudo_voigt_fourPeaks(x, a1, x0, sigma, gamma, eta, shifts_adjusted, area_ratios)
+      fit_values <- pseudo_voigt_eightPeaks(x, a1, x0, sigma, gamma, eta, shifts_adjusted, area_ratios)
       
       # Error calculation
       ERROR <- y_corrected - fit_values
@@ -532,7 +538,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
       }
       
       if (minor_signal) {
-        #emphazise errorcalculation for minor signals
+        # Emphazising errorcalculation for minor signals
         igr <- fit_values > max(y_corrected) * minor_signal_threshold
         ERROR[igr] <- ERROR[igr] * minor_signal_factor
       }
@@ -547,12 +553,12 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     }
     
     # fitness-function return has to be negative D, as GA optimizer is minimizing
-    lower_bounds <- c(0, peak_center - tolerance, 0, 0, 0, peak_shifts * (1 - coupling_tolerance))
-    upper_bounds <- c(max(y_corrected), peak_center + tolerance, 2 / SF, 2 / SF, 1, peak_shifts * (1 + coupling_tolerance))
+    lower_bounds <- c(0, peak_center - tolerance, min_width_ppm, min_width_ppm, 0, peak_shifts * (1 - coupling_tolerance))
+    upper_bounds <- c(max(y_corrected), peak_center + tolerance, max_width_ppm, max_width_ppm, 1, peak_shifts * (1 + coupling_tolerance))
     
   }
   else {
-    stop("Invalid entry for peaknumber. Has to be 'one', 'two', 'three', 'four', 'five', 'six', 'seven' oder 'eight'.")
+    stop("Invalid entry for peaknumber. Has to be 'one', 'two', 'three', 'four', 'five', 'six', 'seven' or 'eight'.")
   }
   
   # GA optimizing
@@ -578,10 +584,10 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     eta <- best_params[5]
     fit_values <- pseudo_voigt_single(x, a, x0, sigma, gamma, eta)
     
-   # Calculation of the integral of the fit
+    # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
-    #Multiplying with the stepwidth
+    # Multiplying with the stepwidth
     deltappm <- abs(x[2]-x[1])
     integral_value <- integralarea*deltappm
     
@@ -598,7 +604,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
-    #Multiplying with the stepwidth
+    # Multiplying with the stepwidth
     deltappm <- abs(x[2]-x[1])
     integral_value <- integralarea*deltappm
     
@@ -616,7 +622,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
-    #Multiplying with the stepwidth
+    # Multiplying with the stepwidth
     deltappm <- abs(x[2]-x[1])
     integral_value <- integralarea*deltappm
     
@@ -630,14 +636,15 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift2 <- best_params[7]
     shift3 <- best_params[8]
     shift4 <- best_params[9]
-    fit_values <- pseudo_voigt_triplet_fourPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4), area_ratios)
+    fit_values <- pseudo_voigt_fourPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4), area_ratios)
     
     # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
-    #Multiplying with the stepwidth
+    # Multiplying with the stepwidth
     deltappm <- abs(x[2]-x[1])
     integral_value <- integralarea*deltappm
+    
     
   } else if (peaknumber == "five"){
     a1 <- best_params[1]
@@ -652,10 +659,10 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift5 <- best_params[10]
     fit_values <- pseudo_voigt_fivePeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5), area_ratios)
     
-   # Calculation of the integral of the fit
+    # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
-    #Multiplying with the stepwidth
+    # Multiplying with the stepwidth
     deltappm <- abs(x[2]-x[1])
     integral_value <- integralarea*deltappm
     
@@ -673,7 +680,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift6 <- best_params[11]
     fit_values <- pseudo_voigt_sixPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6), area_ratios)
     
-   # Calculation of the integral of the fit
+    # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
     #Multiplying with the stepwidth
@@ -696,10 +703,10 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     shift7 <- best_params[12]
     fit_values <- pseudo_voigt_sevenPeaks(x, a1, x0, sigma, gamma, eta, c(shift1, shift2, shift3, shift4, shift5, shift6, shift7), area_ratios)
     
-   # Calculation of the integral of the fit
+    # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
-    #Multiplying with the stepwidth
+    # Multiplying with the stepwidth
     deltappm <- abs(x[2]-x[1])
     integral_value <- integralarea*deltappm
     
@@ -722,7 +729,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     # Calculation of the integral of the fit
     integralarea <- sum(fit_values)
     
-    #Multiplying with the stepwidth
+    # Multiplying with the stepwidth
     deltappm <- abs(x[2]-x[1])
     integral_value <- integralarea*deltappm
     
