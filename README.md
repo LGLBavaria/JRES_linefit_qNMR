@@ -183,7 +183,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
 
 2.  **Import JRES spectrum**
 
-    1.  In cases where referencing to the internal standard signal is not necessary, spectral data can be imported using the `readBruker()` function from the *mrbin* R package. For both workflows, the relevant spectral data are stored in the output list under `...$currentSpectrum`.
+    1.  In cases where referencing to the internal standard signal is not necessary, spectral data can be imported using the `readBruker()` function from the R package *mrbin*. For both workflows, the relevant spectral data is stored in the output list under `...$currentSpectrum`.
 
     2.  For the use of `JRES_import()`, first check the intensity of the background noise in the evaluated region using TopSpin® or similar software. This step is important, as different spectrometers and customized pulse programs can result in varying intensity scales. Define `IntenseLimit` as at least two to three times the maximum observed noise intensity.
 
