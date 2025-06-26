@@ -135,7 +135,7 @@ Therefore `fit_signal()` is based on the following required input values:
 `peak_center`: center of the signal fit  
 `tolerance`: tolerance accepted of the center  
 `SF`: spectral frequency of the spectrometer to calculate Hz to ppm  
-`peak_shifts_Hz`: Peak position to peak_center in Hz (from lowfield (high ppm) to highfield (low ppm)) without any sign (+/-)  
+`peak_shifts_Hz`: peak position to peak_center in Hz (from lowfield (high ppm) to highfield (low ppm)) without any sign (+/-)  
 `area_ratios`: estimated integral ratio (from lowfield (high ppm) to highfield (low ppm))  
 
 optional input values:  
@@ -144,9 +144,11 @@ optional input values:
 `error_factor = 5`: factor to minimize (<1) or emphazise (>1) errorcalculation of small errors, default: 5  
 `minor_signal = F`: possible option to emphazise errorcalculation for minor signals, default: FALSE  
 `minor_signal_factor = 0.1`: factor to minimize (<1) or emphazise (>1) errorcalculation for minor signals, default: 0.1  
-`minor_signal_threshold = 2`: thershold for usage of minor_signal_factor, default: 2 (double max(y))  
+`minor_signal_threshold = 2`: threshold for usage of minor_signal_factor, default: 2 (double max(y))  
 `overfit_cor = F`: possible option to use an extra penalty for signals overfitting the spectral line, default: FALSE  
-`overfit_factor = 10`: factor for extra penalty (overfitting the spectral line), default: low = 1, medium = 10, high = 1000  
+`overfit_factor = 10`: factor for extra penalty (overfitting the spectral line), default: low = 1, medium = 10, high = 1000
+`min_width_Hz = 0`: minimum allowed width for sigma and gamma in Hz
+`max_width_Hz = 2`: maximum allowed width for sigma and gamma in Hz
 
 The output of `fit_signal()` function is a ggplot of the fit in the defined sectral region and a list `fit_result` which contains:  
 `$best_params`: optimised fit-parameters    
