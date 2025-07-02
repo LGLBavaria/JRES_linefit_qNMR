@@ -62,74 +62,84 @@ JRES_import <- function(path, IntenseLimit = 1000) {
 # Default: Inspection area of 21x21 entries (10 left, 1 center, 10 right/10 top, 1 center, 10 bottom) in DF, intensity limit 1000
 # Info: Naming for JRES: F1 = coupling axis in ppm; F2 = chem. shift axis in ppm
 
-JRES_peak_picking <- function(spectrum, ppm_max, 
-                            ppm_min,
-                            horiz_range = 20,
-                            vert_range = 20,
-                            IntenseLimit = 1000) {
+JRES_peak_picking <- function(spectrum, ppm_max, ppm_min,
+                              horiz_range = 20, vert_range = 20,
+                              IntenseLimit = 1000) {
   
-  # Saving the axis information as vectors
-  shift_vector <- as.numeric(colnames(spectrum))  # Shift: Column names as ppm values
-  couple_vector <- as.numeric(rownames(spectrum)) # Coupling: Line names as ppm values
+  # Extract chemical shift axis (F2) from column names
+  shift_vector <- as.numeric(colnames(spectrum))
+  # Extract coupling axis (F1) from row names
+  couple_vector <- as.numeric(rownames(spectrum))
   
-  # Find the indices that correspond to the ppm range
+  # Select relevant F2 region by finding indices within the specified ppm range
   ppm_indices <- which(shift_vector >= ppm_min & shift_vector <= ppm_max)
+  # Extract the submatrix of interest for processing
+  sub_spectrum <- spectrum[, ppm_indices, drop = FALSE]
   
-  # Extract submatrix containing the ppm range
-  sub_spectrum <- spectrum[, ppm_indices]
+  # Get dimensions of the sub-spectrum
+  nrow_s <- nrow(sub_spectrum)
+  ncol_s <- ncol(sub_spectrum)
   
+  # Initialize a list to store found peaks (efficient for growing data)
+  result_list <- list()
+  count <- 1
   
-  # Create an empty dataframe for the results
-  JRESPeaklist <- data.frame(
-    "F1ppm" = numeric(),
-    "F2ppm" = numeric(),
-    Intensity = numeric(),
-    stringsAsFactors = FALSE
-  )
+  # Calculate half-widths for horizontal (F2) and vertical (F1) peak detection windows
+  h_half <- floor(horiz_range / 2)
+  v_half <- floor(vert_range / 2)
   
-  for (i in 1:nrow(sub_spectrum)) {
-    for (j in 1:ncol(sub_spectrum)) {
-      # Current point (intensity)
+  # Loop over each point in the sub-spectrum, including border areas
+  for (i in 1:nrow_s) {
+    for (j in 1:ncol_s) {
       current_value <- sub_spectrum[i, j]
+      # Skip if current intensity is below the defined threshold
+      if (current_value <= IntenseLimit) next
       
-      # Define the boundaries of the neighboring area taking into account the dataframe border
-      i_min <- max(1, i - vert_range/2)
-      i_max <- min(nrow(sub_spectrum), i + vert_range/2)
-      j_min <- max(1, j - horiz_range/2)
-      j_max <- min(ncol(sub_spectrum), j + horiz_range/2)
+      # Dynamically define the boundaries of the local window, adjusting for spectrum borders
+      i_min <- max(1, i - v_half) # Ensure window does not go below 1st row
+      i_max <- min(nrow_s, i + v_half) # Ensure window does not exceed last row
+      j_min <- max(1, j - h_half) # Ensure window does not go below 1st column
+      j_max <- min(ncol_s, j + h_half) # Ensure window does not exceed last column
       
-      # Extract the area of the neighboring cells
-      neighbors <- sub_spectrum[i_min:i_max, j_min:j_max]
+      # Extract the local window around the current point
+      window <- sub_spectrum[i_min:i_max, j_min:j_max, drop = FALSE]
       
-      # Remove the center (the current point) from the neighboring cell view
-      neighbors_without_center <- neighbors
-      center_i <- i - i_min + 1
-      center_j <- j - j_min + 1
-      neighbors_without_center[center_i, center_j] <- NA
+      # Determine the center's position within the extracted local window
+      center_in_window_i <- i - i_min + 1
+      center_in_window_j <- j - j_min + 1
       
-      # Check whether the current point is a local maximum
-      if (current_value > IntenseLimit &&
-          current_value > max(neighbors_without_center, na.rm = TRUE)) {
-        
-        # Find original position
-        i2 <- rownames(sub_spectrum)[i]
-        j2 <- colnames(sub_spectrum)[j]
-        
-        # Add the local maximum to JRESPeaklist
-        JRESPeaklist <- rbind(JRESPeaklist,
-                              data.frame(
-                                "F1ppm" = as.numeric(i2),
-                                "F2ppm" = as.numeric(j2),
-                                Intensity = current_value
-                              ))
+      # Create a temporary window with the center value set to NA for comparison
+      window_center_removed <- window
+      window_center_removed[center_in_window_i, center_in_window_j] <- NA
+      
+      # Check if the current point is a local maximum (i.e., greater than all its neighbors)
+      if (current_value > max(window_center_removed, na.rm = TRUE)) {
+        # Store the F1 ppm, F2 ppm, and Intensity of the detected peak
+        result_list[[count]] <- c(
+          F1ppm = couple_vector[i],
+          F2ppm = shift_vector[ppm_indices[j]],
+          Intensity = current_value
+        )
+        count <- count + 1
       }
     }
   }
   
-  JRES_Peaks <- list(
+  # Handle the case where no peaks are found
+  if (length(result_list) == 0) {
+    JRESPeaklist <- data.frame(F1ppm = numeric(0), F2ppm = numeric(0), Intensity = numeric(0))
+  } else {
+    # Combine all found peaks from the list into a data frame
+    JRESPeaklist <- do.call(rbind, result_list)
+    JRESPeaklist <- as.data.frame(JRESPeaklist)
+  }
+  # Ensure correct column names for the peak list
+  colnames(JRESPeaklist) <- c("F1ppm", "F2ppm", "Intensity")
+  
+  # Return both the processed sub-spectrum and the detected peak list
+  return(list(
     sub_spectrum = sub_spectrum,
     JRESPeaklist = JRESPeaklist
-  )
-  
-  return(JRES_Peaks)
+  ))
 }
+
