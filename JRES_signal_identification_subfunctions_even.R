@@ -67,6 +67,10 @@ filter_even_couplings <- function(even_couplings, F2shifttol = 0.001, F1disttol 
     pos_indices <- as.numeric(rownames_positive)
     neg_indices <- as.numeric(rownames_negative)
     
+    if (length(pos_indices) == 0 || length(neg_indices) == 0) {
+      return(diff_even_coupling) # Gib das leere Dataframe zurück
+    }
+    
     # Create the possible combinations of peaks
     combinations <- expand.grid(row_Peak1 = pos_indices, row_Peak2 = neg_indices)
     
