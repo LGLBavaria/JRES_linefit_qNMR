@@ -90,7 +90,7 @@ Like the even signal function, it is divided into modular subfunctions for clari
         `Error_JRES0` and `Error_JRES1` (logical): error flags<br>
         <br>
   
-### `JRES_select_target_CoM()`
+### JRES_select_target_CoM()
 This function identifies the Center of Mass (CoM) that is closest to a specified target F1 and F2 ppm position from a given list of CoMs. It also retrieves the associated base area points for the selected CoM's coherent component.
 
 #### Parameters:
