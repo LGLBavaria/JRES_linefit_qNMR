@@ -566,7 +566,7 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
                   fitness = fitness_function, 
                   lower = lower_bounds, 
                   upper = upper_bounds, 
-                  popSize = 50, 
+                  popSize = 200, 
                   maxiter = 1000, 
                   run = 150,
                   monitor = FALSE # no print in console
@@ -759,9 +759,8 @@ fit_signal <- function(sampleID, x, y, peaknumber, peak_center, tolerance, SF, p
     theme(legend.position = "right",
           legend.text = element_text(size = 10))
   
-  print(p)
-  
-  # Print the patrameters of the best fit and it's integral
+
+    # Print the patrameters of the best fit and it's integral
   if (peaknumber == "one") {
     cat("best fit for one peak:\n")
     cat("a:", a, "\n")
