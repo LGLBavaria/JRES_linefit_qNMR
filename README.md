@@ -248,7 +248,8 @@ An example spectra of beer and beer-based mixed beverage is provided.
         JRES2D_Data <- as.data.frame(JRES2D_Import$currentSpectrum)
      ```
 
-3.  **Peak picking and identification of a singulet (i.e. methyl group singulet of acetic acid)**
+3.  **JRES signal identification**<br><br>
+    3.1  **Peak picking and identification of a singulet (i.e. methyl group singulet of acetic acid)**
 
     ``` r
     # 1. Peak picking J-resolved
@@ -277,7 +278,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
     Error_JRES1 <- result_list$Error_JRES1
     ```
 
-4.  **Peak picking and identification of a signal with even multiplicity (i.e. methyl group doublet of lactic acid)**
+    3.2  **Peak picking and identification of a signal with even multiplicity (i.e. methyl group doublet of lactic acid)**
 
     ``` r
     # 1. Peak picking J-resolved
@@ -313,7 +314,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
     Error_JRES1 <- result_list$Error_JRES1
     ```
 
-5.  **Peak picking and identification of a signal with an odd numbered multiplicity (i.e. methyl group triplet of ethanol)**
+    3.3  **Peak picking and identification of a signal with an odd numbered multiplicity (i.e. methyl group triplet of ethanol)**
 
     ``` r
     # 1. Peak picking J-resolved
@@ -349,7 +350,8 @@ An example spectra of beer and beer-based mixed beverage is provided.
     Error_JRES1 <- result_list$Error_JRES1
     ```
     
-6.  **CoM Calculation and selection (i.e. mixed Signal of fructose)**
+    3.4  **CoM Calculation and selection (i.e. mixed Signal of fructose)**
+    
     ``` r
     # 1.  Calculating CoMs in defined spectral region
     CoM <- JRES_calculate_CoM(
@@ -380,7 +382,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
     Error_JRES1 <- Ident_CoM$Error_JRES1    
     ```
     
-7.  **Plotting the results**
+4.  **Plotting the results**
 
     ``` r
     JRESplot <- JRES_plot_spectrum(
@@ -398,7 +400,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
     )
     ```
     
-8.  **Import 1D spectrum**
+5.  **Import 1D spectrum**
 
      The function `read_1d_rnmrdata()` is used for importing the 1D spectra.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
 
@@ -410,7 +412,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
         NOESY1D_Data <- read_1d_rnmnrdata(path)
     ```
 
-9.  **Extraktion of the shifts, intensity and SF of the spectra**
+6.  **Extraktion of the shifts, intensity and SF of the spectra**
 
     ``` r
         shift <- extract_ppm(NOESY1D_Data)
@@ -418,7 +420,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
         SF <- NOESY1D_Data@parameters$SF
     ```
     
-10.  **LineFitting of a signal with three peaks (i.e. methyl group triplet of ethanol)**
+7.  **LineFitting of a signal with three peaks (i.e. methyl group triplet of ethanol)**
     ``` r
     # Definition of the Peak center out of JRES (result_list)
         peak_center <- result_list$peak_center
