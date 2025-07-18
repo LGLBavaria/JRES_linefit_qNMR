@@ -374,6 +374,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
       target_f2_val = 4.09,
       target_f1_val = 0
     )
+    
     mark_signal_data <- Ident_CoM$selected_com_point_df
     peak_center <- mark_signal_data$F2ppm
     base_area_df <- Ident_CoM$selected_base_area_df
