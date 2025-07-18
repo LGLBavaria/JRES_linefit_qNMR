@@ -124,16 +124,28 @@ The function calculates the Euclidean distance between each provided CoM and the
 `Error_JRES1` (logical): Error flag, `TRUE` if `JRES_CoMList` has more than one entry.<br><br>
       
 ## JRES_plot_spectrum()
-This function is used for visualizing a section of a JRES spectrum with optional marking of identified signals. The function starts by converting the spectrum into a long format for visualization using the **ggplot2** package. It then generates a base plot of the spectrum with contour lines and filled regions. If `mark_signal` is set to `TRUE`, the signals stored in `mark_signal_data` are added as marked points. These points are displayed in the specified `mark_color`. Labels for all marked peaks are generated, displaying the chemical shifts (F1ppm and F2ppm) with an offset to prevent label overlap. The function returns the generated visualization object.<br>        
-    **Parameters:**<br>
-    **`sub_spectrum`** (data frame): A data frame containing the spectral data for the region to be displayed. This is a required parameter.<br>
-    **`mark_signal_data`** (data frame, optional): A data frame containing the identified peaks that are to be marked on the spectrum.<br>
-    **`sampleID`** (character, optional): A string representing the sample number. Used for labeling of the plot.<br>
-    **`analyte`** (character, optional): The name of the analyte being analyzed. Used for labeling of the plot.<br>
-    **`mark_signal`** (logical, optional): A logical value that indicates whether to mark the identified peaks. The default is `FALSE`. If set to `TRUE`, the peaks in `mark_signal_data` will be marked.<br>
-    **`mark_color`** (character, optional): The color used to mark the identified peaks. This parameter is only used if `mark_signal` is `TRUE`.<br>
-    **`mark_rel_x_shift`** (numeric, optional): The relative shift for placing the labels of marked peaks along the x-axis. This helps avoid overlap of labels with the signal.<br>
-    <br>
+
+This function is used for visualizing a section of a JRES spectrum with optional marking of identified signals and their base areas. The function starts by converting the spectrum into a long format for visualization using the **ggplot2** package. It then generates a base plot of the spectrum with contour lines and filled regions. A closed black border, matching the thickness of the axes, is added around the entire plot area.
+
+The function supports optional layers:  
+* If `mark_signal` is set to `TRUE`, the signals stored in `mark_signal_data` are added as marked points. These points are displayed in the specified `mark_color`. Labels for all marked peaks are generated, displaying the chemical shifts (F1ppm and F2ppm) with an offset to prevent label overlap.  
+* If `mark_base_area` is set to `TRUE`, the base areas of the signals, defined in `base_area_data`, are plotted as transparent tiles. The dimensions of these tiles are automatically determined based on the spectrum's resolution (step size) in F1 and F2 dimensions, ensuring appropriate scaling even for narrow ranges.
+
+The axes are scaled with reversed directions for F1 and F2 ppm, and minor breaks are precisely controlled. The function returns the generated visualization object.
+
+**Parameters:**<br>
+**`sub_spectrum`** (data frame): A data frame containing the spectral data for the region to be displayed. This is a required parameter.  
+**`sampleID`** (character, optional): A string representing the sample ID. Used for labeling of the plot title. Default is `"NA"`.  
+**`analyte`** (character, optional): The name of the analyte being analyzed. Used for labeling of the plot title. Default is `"NA"`.  
+**`mark_signal`** (logical, optional): A logical value that indicates whether to mark the identified peaks. The default is `FALSE`. If set to `TRUE`, the peaks in `mark_signal_data` will be marked.  
+**`mark_signal_data`** (data frame, optional): A data frame containing the identified peaks that are to be marked on the spectrum. This parameter is used only if `mark_signal` is `TRUE`.  
+**`mark_color`** (character, optional): The color used for the marked peaks and their labels. This parameter is only used if `mark_signal` is `TRUE`. Default is `"red"`.  
+**`mark_rel_x_shift`** (numeric, optional): The relative shift for placing the labels of marked peaks along the x-axis (F2ppm). This helps avoid overlap of labels with the signal points. Default is `0.05` (5% of the F2 range).  
+**`mark_base_area`** (logical, optional): A logical value that indicates whether to mark the base areas of the signals. The default is `FALSE`. If set to `TRUE`, the areas in `base_area_data` will be plotted.  
+**`base_area_data`** (data frame, optional): A data frame containing the base area information to be plotted. This parameter is used only if `mark_base_area` is `TRUE`.  
+**`base_area_color`** (character, optional): The fill and border color for the base area tiles. This parameter is only used if `mark_base_area` is `TRUE`. Default is `"blue"`.  
+**`base_area_alpha`** (numeric, optional): The transparency level for the base area tiles (value between 0 and 1, where 0 is fully transparent and 1 is opaque). This parameter is only used if `mark_base_area` is `TRUE`. Default is `0.2`.  
+**`minor_subdivisions`** (integer, optional): The exact number of minor breaks to be placed between each pair of major breaks on both axes. For example, `1` will place one minor break exactly in the middle of each major interval, `2` will place two evenly spaced minor breaks, and so on. Default is `1`.
     
 ## read_1d_rnmrdata(path)
 To read bruker NMR files the package rnmrfit (https://github.com/ssokolen/rnmrfit) is used. 
@@ -339,8 +351,37 @@ An example spectra of beer and beer-based mixed beverage is provided.
     Error_JRES0 <- result_list$Error_JRES0
     Error_JRES1 <- result_list$Error_JRES1
     ```
-
-6.  **Plotting the results**
+6.  **CoM Calculation and selection (i.e. mixed Signal of fructose)**
+    ``` r
+    # 1.  Calculating CoMs in defined spectral region
+    CoM <- JRES_calculate_CoM(
+      spectrum = JRES2D_Data,
+      ppm_f2_min = 4.07,
+      ppm_f2_max = 4.12,
+      ppm_f1_min = -0.018,
+      ppm_f1_max = 0.018,
+      intensity_threshold = 5000
+    )
+    
+    sub_spectrum <- CoM$sub_spectrum
+    all_base_areas_df <- CoM$all_base_areas_df
+    JRES_CoMList <- CoM$JRES_CoMList
+    
+    # 2.  Selecting the nearest CoM to defined target
+    Ident_CoM <- JRES_select_target_CoM(
+      JRES_CoMList = JRES_CoMList,
+      all_base_areas_df = all_base_areas_df,
+      target_f2_val = 4.09,
+      target_f1_val = 0
+    )
+    mark_signal_data <- Ident_CoM$selected_com_point_df
+    peak_center <- mark_signal_data$F2ppm
+    base_area_df <- Ident_CoM$selected_base_area_df
+    Error_JRES0 <- Ident_CoM$Error_JRES0
+    Error_JRES1 <- Ident_CoM$Error_JRES1
+    
+    ```
+7.  **Plotting the results**
 
     ``` r
     JRESplot <- JRES_plot_spectrum(
@@ -350,11 +391,15 @@ An example spectra of beer and beer-based mixed beverage is provided.
       analyte = "NA",
       mark_signal = TRUE,
       mark_color = "red",
-      mark_rel_x_shift = 0.05
+      mark_rel_x_shift = 0.05,
+      mark_base_area = TRUE,
+      base_area_color = "blue",
+      base_area_alpha = 0.2,
+      minor_subdivisions = 1
     )
     ```
     
-7.  **Import 1D spectrum**
+8.  **Import 1D spectrum**
 
      The function `read_1d_rnmrdata()` is used for importing the 1D spectra.  Define the path to the spectrum of interest. For the Bruker format used, this includes the file path, the name of the spectrum directory, and the experiment number.
 
@@ -366,7 +411,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
         NOESY1D_Data <- read_1d_rnmnrdata(path)
     ```
 
-8.  **Extraktion of the shifts, intensity and SF of the spectra**
+9.  **Extraktion of the shifts, intensity and SF of the spectra**
 
     ``` r
         shift <- extract_ppm(NOESY1D_Data)
@@ -374,7 +419,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
         SF <- NOESY1D_Data@parameters$SF
     ```
     
-9.  **LineFitting of a signal with three peaks (i.e. methyl group triplet of ethanol)**
+10.  **LineFitting of a signal with three peaks (i.e. methyl group triplet of ethanol)**
     ``` r
     # Definition of the Peak center out of JRES (result_list)
         peak_center <- result_list$peak_center
