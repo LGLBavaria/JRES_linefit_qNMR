@@ -8,16 +8,16 @@ publication will be inserted as soon as it is published
 # Requirements
 -   **R version**: \>= 4.4.1
 -   **Required R packages**:
-    -   *dplyr*
-    -   *GA*
-    -   *ggplot2*
-    -   *ggrepel*
-    -   *mrbin*
-    -   *purrr*
-    -   *rnmrfit*
-    -   *scales*
-    -   *stats*
-    -   *tidyr*<br><br>
+    -   *`dplyr`*
+    -   *`GA`*
+    -   *`ggplot2`*
+    -   *`ggrepel`*
+    -   *`mrbin`*
+    -   *`purrr`*
+    -   *`rnmrfit`*
+    -   *`scales`*
+    -   *`stats`*
+    -   *`tidyr`*<br><br>
 
 # Key Functions Overview
 ## JRES_import()
