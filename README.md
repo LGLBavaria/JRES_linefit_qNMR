@@ -30,7 +30,7 @@ This function automates the import and referencing of 2D JRES NMR spectra from B
 ## JRES_peak_picking()
 This function identifies peaks in a selected region of a 2D JRES NMR spectrum. It requires the input spectrum and a defined chemical shift range (`ppm_min`, `ppm_max`). Peaks are detected as local maxima that exceed the defined intensity threshold and all surrounding points in a moving search window. Optional parameters allow further control over the horizontal (F2) and vertical (F1) search window size (`horiz_range`, `vert_range`) and a minimum intensity threshold (`IntenseLimit`) to suppress noise artifacts. The optimal intensity threshold strongly depends on the spectrometer setup and should be determined by manually evaluating the intensity range of the background noise.<br><br>
    **Parameters:**<br>
-    **`spectrum`** (dataframe): spectrum dataframe imported by `JRES_import()`<br>
+    **`spectrum`** (2D numeric matrix): A 2D numeric matrix representing the JRES spectrum. Row names should be F1 (coupling) ppm values and column names F2 (chemical shift) ppm values.<br>
     **`ppm_max`** (numeric): upper border for the chemical shift (F2) in the evaluated region<br>
     **`ppm_min`** (numeric): lower border for the chemical shift (F2) in the evaluated region<br>
     **`horiz_range`** (numeric, optional): sets the broadness of the F2-Range used in the identification of local maxima (Peaks) (Default: 20 [datapoints])<br>
