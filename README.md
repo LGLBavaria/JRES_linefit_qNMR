@@ -264,7 +264,6 @@ An example spectra of beer and beer-based mixed beverage is provided.
     sub_spectrum <- JRES_Peaks$sub_spectrum
     JRESPeaklist <- JRES_Peaks$JRESPeaklist
 
-
     # 2.  Identification of the acetic acid singulet
     result_list <- JRES_find_singulet(
       JRESPeaklist = JRESPeaklist, 
@@ -293,7 +292,6 @@ An example spectra of beer and beer-based mixed beverage is provided.
 
     sub_spectrum <- JRES_Peaks$sub_spectrum
     JRESPeaklist <- JRES_Peaks$JRESPeaklist
-
 
     # 2.  Identification of the lactic acid doublet
     result_list <- JRES_find_even_signal(
@@ -331,7 +329,6 @@ An example spectra of beer and beer-based mixed beverage is provided.
     sub_spectrum <- JRES_Peaks$sub_spectrum
     JRESPeaklist <- JRES_Peaks$JRESPeaklist
 
-
     # 2.  Identification of the ethanol triplet
     result_list <- JRES_find_odd_signal(
       JRESPeaklist =JRESPeaklist,
@@ -351,6 +348,7 @@ An example spectra of beer and beer-based mixed beverage is provided.
     Error_JRES0 <- result_list$Error_JRES0
     Error_JRES1 <- result_list$Error_JRES1
     ```
+    
 6.  **CoM Calculation and selection (i.e. mixed Signal of fructose)**
     ``` r
     # 1.  Calculating CoMs in defined spectral region
@@ -379,9 +377,9 @@ An example spectra of beer and beer-based mixed beverage is provided.
     peak_center <- mark_signal_data$F2ppm
     base_area_df <- Ident_CoM$selected_base_area_df
     Error_JRES0 <- Ident_CoM$Error_JRES0
-    Error_JRES1 <- Ident_CoM$Error_JRES1
-    
+    Error_JRES1 <- Ident_CoM$Error_JRES1    
     ```
+    
 7.  **Plotting the results**
 
     ``` r
