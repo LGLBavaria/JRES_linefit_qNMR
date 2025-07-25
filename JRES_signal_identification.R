@@ -179,7 +179,7 @@ JRES_find_even_signal <- function(JRESPeaklist,
   
   # 2. Structuring and pre-selection of possible couplings -------------------
   
-  diff_even_coupling <- filter_even_couplings(even_couplings, F2shifttol = F2shifttol, F1disttol = F1disttol)
+  diff_even_coupling <- filter_even_couplings(even_couplings, JRESPeaklist = JRESPeaklist, F2shifttol = F2shifttol, F1disttol = F1disttol)
   
   # 3. Selection according to desired even-numbered multiplicity -----------------
   
@@ -189,7 +189,7 @@ JRES_find_even_signal <- function(JRESPeaklist,
   
   # 4. checking the coupling information -----------------------------------
   
-  couple_checked <- check_even_coupling(multiplicity_checked, coupleconst, multiplicity = multiplicity, coupletol = coupletol)
+  couple_checked <- check_even_coupling(multiplicity_checked, JRESPeaklist = JRESPeaklist, coupleconst, multiplicity = multiplicity, coupletol = coupletol)
  
   # 5.  Optional: Checking the peak height ratio ------------------------------
   
@@ -200,7 +200,7 @@ JRES_find_even_signal <- function(JRESPeaklist,
  
   # 6. results section ---------------------------------------------------------
   
-  result_list <- results_even_signal(height_checked, multiplicity, F2shifttarget, coupleconst)
+  result_list <- results_even_signal(height_checked, JRESPeaklist = JRESPeaklist, multiplicity, F2shifttarget, coupleconst)
   
   cat("\n")
   
@@ -229,28 +229,30 @@ JRES_find_odd_signal <- function(JRESPeaklist,
   
   # 2. Structuring and preselection of possible couplings -------------------
   
-  diff_odd_coupling <- filter_odd_couplings(middle_peak, F2shifttol = F2shifttol)
+  diff_odd_coupling <- filter_odd_couplings(middle_peak, JRESPeaklist = JRESPeaklist, F2shifttol = F2shifttol)
   
   # 3. Selection according to desired odd multiplicity -----------------
   
   multiplicity_checked <- find_odd_coupled_signals(diff_odd_coupling,
+                                                      JRESPeaklist = JRESPeaklist,
                                                       multiplicity = multiplicity,
                                                       F2shifttol = F2shifttol)
   
   # 4. Checking the coupling information -----------------------------------
   
-  couple_checked <- check_odd_coupling(multiplicity_checked, coupleconst, multiplicity = multiplicity, coupletol = coupletol)
+  couple_checked <- check_odd_coupling(multiplicity_checked, JRESPeaklist = JRESPeaklist, coupleconst, multiplicity = multiplicity, coupletol = coupletol)
   
   # 5. Optional: Checking the peak height ratio ------------------------------
   
   height_checked <- check_height_odd_signal(couple_checked,
+                                            JRESPeaklist = JRESPeaklist,
                                                check_height = check_height,
                                                heightratio,
                                                heighttol = heighttol)
   
   # 6. Results section ---------------------------------------------------------
   
-  result_list <- results_odd_signal(height_checked, multiplicity, F2shifttarget, coupleconst)
+  result_list <- results_odd_signal(height_checked, JRESPeaklist = JRESPeaklist, multiplicity, F2shifttarget, coupleconst)
   
   cat("\n")
   

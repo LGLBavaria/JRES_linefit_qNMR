@@ -46,7 +46,7 @@ cut_even_couplings <- function(JRESPeaklist,
 # Structuring and preselection of possible couplings ---------------------------
 
 
-filter_odd_couplings <- function(middle_peak, F2shifttol = 0.001) {
+filter_odd_couplings <- function(middle_peak, JRESPeaklist, F2shifttol = 0.001) {
   # Create an empty data frame for the difference information
   diff_odd_coupling <- data.frame(
     "row_outer_Peak" = numeric(),
@@ -163,7 +163,7 @@ filter_odd_couplings <- function(middle_peak, F2shifttol = 0.001) {
 
 # Selection of the desired even multiplicity ---------------------
 
-find_odd_coupled_signals <- function(diff_odd_coupling, multiplicity, F2shifttol = 0.001) {
+find_odd_coupled_signals <- function(diff_odd_coupling, JRESPeaklist, multiplicity, F2shifttol = 0.001) {
   
   if (nrow(diff_odd_coupling) >= 2){
   # Sort the determined couplings into F2 groups of the same position
@@ -283,6 +283,7 @@ check_odd_coupling <- function(multiplicity_checked,
 # Caveat: Signal multiplicity is derived from vector heightratio
 # Height ratio check implemented as optional; to activate check_height = TRUE
 check_height_odd_signal <- function(couple_checked,
+                                    JRESPeaklist,
                                      check_height = FALSE,
                                      heightratio,
                                      heighttol = 0.1) {
@@ -348,7 +349,7 @@ check_height_odd_signal <- function(couple_checked,
 # Check the number of signals in the selected range and select by chem. shift if necessary
 # Output of relevant information and error messages
 
-results_odd_signal <- function(height_checked, multiplicity, F2shifttarget, coupleconst) {
+results_odd_signal <- function(height_checked, JRESPeaklist, multiplicity, F2shifttarget, coupleconst) {
   # Predefining error messages
   Error_JRES0 <- FALSE
   Error_JRES1 <- FALSE
