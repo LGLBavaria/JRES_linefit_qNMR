@@ -92,7 +92,7 @@ JRES_plot_spectrum <- function(sub_spectrum,
   f1_resolution <- ifelse(length(f1_unique_values) > 1, min(diff(f1_unique_values)), 0.01)
   
   # Calculate major breaks for F2 and F1 axes.
-  f2_major_breaks <- scales::pretty_breaks(n = 7)(sub_spectrum_long$F2ppm)
+  f2_major_breaks <- scales::pretty_breaks(n = 5)(sub_spectrum_long$F2ppm)
   f1_major_breaks <- scales::pretty_breaks(n = 7)(sub_spectrum_long$F1ppm)
   
   # Generate minor breaks using the custom helper function, based on the requested number of breaks.
