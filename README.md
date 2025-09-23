@@ -203,7 +203,7 @@ The output of `fit_signal()` function is a ggplot of the fit in the defined sect
 `plot`: a ggplot for visualising the fit in the defines spectral region with the spectral line and it's residuals
 
 ## integrate_signal()
-This function provides a simple method for integrating 1D NMR signals. The function first determines the integration range by selecting all data points within the specified boundaries (`left_range` and `right_range`). It then applies a baseline correction by determining the minimum intensity within the integration range and subtracting it from all intensity values. The integral is then calculated as the sum of the corrected intensities within the selected range.<br>
+This function provides a simple method for integrating 1D NMR signals. The function first determines the integration range by selecting all data points within the specified ranges depending on the defined peak center (`left_range` and `right_range`). It then applies a baseline correction by determining the minimum intensity within the integration range and subtracting it from all intensity values. The integral is then calculated as the sum of the corrected intensities within the selected range.<br>
 
 For visualization, the function creates a data frame and generates a plot using the *ggplot2* package. The plot displays the spectrum as a black line, the integrated area as a blue-shaded region, and the integration boundaries as dashed lines.<br><br>
     **Parameters:**<br>
