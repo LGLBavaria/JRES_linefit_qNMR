@@ -158,15 +158,22 @@ Using the calculated step size, the ppm axis is constructed from the maximum ppm
 ## fit_signal()
 The function `fit_signal()` is used to precisely analyse NMR spectra by fitting a (or multiple) pseudo-Voigt curve(s) into a baseline corrected spectral area.
 
-$\eta \cdot \left( \frac{a}{1 + \left( \frac{x - x_0}{\gamma} \right)^2 } \right) + (1 - \eta) \cdot \left( a \cdot \exp \left( \frac{-(x - x_0)^2}{2 \sigma^2} \right) \right)$
+$F(x) = \eta \cdot a \cdot L(x) + (1 - \eta) \cdot a \cdot G(x)\$
 
-<sub>η: Ratio of Lorentzian contribution to the pseudo-Voigt function.</sub>  
-<sub>1 - η: Ratio of Gaussian contribution to the pseudo-Voigt function.</sub>  
-<sub>a: Amplitude of the fit.</sub>  
-<sub>x: signal center.</sub>  
-<sub>x₀: Peak shift relative to the signal center; the combination of x and x₀ determines the actual peak position.</sub>  
-<sub>γ: Half-width of the Lorentzian component.</sub>  
-<sub>σ: Half-width of the Gaussian component.</sub>
+with
+
+$L(x) = \frac{1}{1 + \left( \frac{x - x_0}{\gamma} \right)^2}\$
+
+and
+
+$G(x) = \exp\left(-\left(\frac{x - x_0}{\sigma}\right)^2\right)\$
+
+<sub>η: Weighting coefficients.</sub>  
+<sub>a: Amplitude (peak height) of the signal at x = x_0.</sub>  
+<sub>x: Frequency.</sub>  
+<sub>x₀:Resonance frequency of the peak.</sub>  
+<sub>γ: Scale parameter of the Lorentzian component.</sub>  
+<sub>σ: Scale parameter of the Gaussian component.</sub>
 
 To optimize the fitting parameters, a genetic algorithm (GA) (https://github.com/luca-scr/GA) was employed. 
 
