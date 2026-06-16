@@ -3,7 +3,9 @@
 This R code provides functions to evaluate J-Resolution 2D NMR-spectra and use the received signal information to create a Line-Fit algorithmn for 1D NMR-spectra. Via PULCON it is possible to quantify analytes within complex matrices by this code combination.
 
 Please cite the following manuscripts if you use the package:
-publication will be inserted as soon as it is published
+Sabine Milbert, Jakob T. Laumeyer, Teresa M. Müller, Olga Krenz, Johannes Fuchs, Leane Lehmann, and Steffen T. Seifert
+Analytical Chemistry 2026 98 (17), 12351-12361
+DOI: 10.1021/acs.analchem.5c07171
 
 # Requirements
 -   **R version**: \>= 4.4.1
