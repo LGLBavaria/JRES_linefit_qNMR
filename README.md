@@ -97,7 +97,7 @@ Like the even signal function, it is divided into modular subfunctions for clari
 
 ### JRES_calculate_CoM()
 
-This function identifies coherent signal regions (peaks) within a specified rectangular region of a 2D NMR spectrum. It uses a Connected-Component Algorithm (CCA) to group points with intensities above a defined threshold. For each identified coherent region, the function calculates its Center of Mass (CoM) and compiles a list of all these CoMs, along with their associated base area points.<br><br>
+This function identifies coherent signal regions (peaks) within a specified rectangular region of a 2D NMR spectrum. It uses a Connected-Component Algorithm (CCA) to group datapoints with intensities above a defined threshold. For each identified coherent region, the function calculates its Center of Mass (CoM) and compiles a list of all these CoMs, along with their associated base area points.<br><br>
 **Parameters:**<br>
 **`spectrum`** (2D numeric matrix): A 2D numeric matrix representing the JRES spectrum. Row names should be F1 (coupling) ppm values and column names F2 (chemical shift) ppm values.<br>
 **`ppm_f2_min`** (numeric): Minimum F2 ppm value for the region of interest.<br>
